@@ -372,22 +372,27 @@ func (svg *SVGGenerator) drawNaturalBranch(builder *strings.Builder, branch Bran
 	}
 }
 
-// drawLeavesOnBranch draws leaves along a branch
+// drawLeavesOnBranch draws leaves clustered at branch tip in a circular pattern
 func (svg *SVGGenerator) drawLeavesOnBranch(builder *strings.Builder, branch BranchInfo) {
 	functionCount := len(branch.Functions)
 	
+	// Cluster leaves at the end of the branch (70-100% along the branch)
 	for i, functionNode := range branch.Functions {
-		// Calculate leaf position along the branch
-		t := float64(i+1) / float64(functionCount+1)
-		leafX := branch.StartX + (branch.EndX-branch.StartX)*t
-		leafY := branch.StartY + (branch.EndY-branch.StartY)*t
+		// Position leaves near the branch tip
+		t := 0.7 + float64(i)*0.3/float64(functionCount) // 0.7 to 1.0
+		baseX := branch.StartX + (branch.EndX-branch.StartX)*t
+		baseY := branch.StartY + (branch.EndY-branch.StartY)*t
 		
-		// Add some randomness to leaf position
-		offsetX := float64((i%3-1)) * 15 // -15, 0, or 15
-		offsetY := float64((i%2)) * 10   // 0 or 10
+		// Create circular distribution around the branch tip
+		radius := 25.0 + float64(i)*5.0 // Varying radius for natural look
+		angle := float64(i) * 2 * math.Pi / float64(functionCount)
 		
-		leafX += offsetX
-		leafY += offsetY
+		// Add some randomness to angle for natural variation
+		angleOffset := (float64(i%5) - 2) * 0.3 // -0.6 to 0.6 radians
+		angle += angleOffset
+		
+		leafX := baseX + radius*math.Cos(angle)
+		leafY := baseY + radius*math.Sin(angle)
 		
 		// Draw leaf based on complexity
 		svg.drawNaturalLeaf(builder, leafX, leafY, functionNode)
