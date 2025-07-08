@@ -1,0 +1,134 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+<rect width="100%" height="100%" fill="#f8f9fa"/>
+<text x="400" y="30" text-anchor="middle" font-family="Arial" font-size="20" font-weight="bold" fill="#333">🌳 Complexity Tree Visualization</text>
+<path d="M 370.0,550.0 L 430.0,550.0 L 418.0,350.0 L 382.0,350.0 Z" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+<path d="M 370.0,550.0 Q 372.0,450.0 382.0,350.0" fill="none" stroke="#654321" stroke-width="1" opacity="0.6"/>
+<path d="M 385.0,550.0 Q 392.0,450.0 391.0,350.0" fill="none" stroke="#654321" stroke-width="1" opacity="0.6"/>
+<path d="M 400.0,550.0 Q 396.0,450.0 400.0,350.0" fill="none" stroke="#654321" stroke-width="1" opacity="0.6"/>
+<path d="M 415.0,550.0 Q 416.0,450.0 409.0,350.0" fill="none" stroke="#654321" stroke-width="1" opacity="0.6"/>
+<path d="M 430.0,550.0 Q 420.0,450.0 418.0,350.0" fill="none" stroke="#654321" stroke-width="1" opacity="0.6"/>
+<line x1="371.5" y1="525.0" x2="428.5" y2="525.0" stroke="#654321" stroke-width="0.8" opacity="0.4"/>
+<line x1="375.0" y1="500.0" x2="425.0" y2="500.0" stroke="#654321" stroke-width="0.8" opacity="0.4"/>
+<line x1="372.5" y1="475.0" x2="427.5" y2="475.0" stroke="#654321" stroke-width="0.8" opacity="0.4"/>
+<line x1="376.0" y1="450.0" x2="424.0" y2="450.0" stroke="#654321" stroke-width="0.8" opacity="0.4"/>
+<line x1="379.5" y1="425.0" x2="420.5" y2="425.0" stroke="#654321" stroke-width="0.8" opacity="0.4"/>
+<line x1="377.0" y1="400.0" x2="423.0" y2="400.0" stroke="#654321" stroke-width="0.8" opacity="0.4"/>
+<line x1="380.5" y1="375.0" x2="419.5" y2="375.0" stroke="#654321" stroke-width="0.8" opacity="0.4"/>
+<ellipse cx="392.0" cy="490.0" rx="4.0" ry="2.8" fill="#654321" opacity="0.8"/>
+<ellipse cx="391.5" cy="489.5" rx="2.4" ry="1.6" fill="#A0522D" opacity="0.6"/>
+<ellipse cx="412.0" cy="430.0" rx="3.0" ry="2.1" fill="#654321" opacity="0.8"/>
+<ellipse cx="411.5" cy="429.5" rx="1.8" ry="1.2" fill="#A0522D" opacity="0.6"/>
+<ellipse cx="394.0" cy="390.0" rx="2.0" ry="1.4" fill="#654321" opacity="0.8"/>
+<ellipse cx="393.5" cy="389.5" rx="1.2" ry="0.8" fill="#A0522D" opacity="0.6"/>
+<rect x="381.0" y="502.5" width="8.0" height="15.0" rx="2" ry="2" fill="#654321" opacity="0.5"/>
+<rect x="407.0" y="464.0" width="6.0" height="12.0" rx="2" ry="2" fill="#654321" opacity="0.5"/>
+<rect x="393.0" y="406.0" width="4.0" height="8.0" rx="2" ry="2" fill="#654321" opacity="0.5"/>
+<line x1="400.0" y1="510.0" x2="471.4" y2="484.0" stroke="#8B4513" stroke-width="8.0"/>
+<path d="M 408.8,493.3 L 412.8,495.3 L 418.8,499.3 L 414.8,503.3 L 416.8,507.3 L 408.8,505.3 L 400.8,507.3 L 402.8,503.3 L 398.8,499.3 L 404.8,495.3 Z" fill="#f8d7da" stroke="#dc3545" stroke-width="1"/>
+<title>SuperComplexProcessor (complexity: 23)</title>
+<path d="M 447.6,494.7 L 451.6,496.7 L 457.6,500.7 L 453.6,504.7 L 455.6,508.7 L 447.6,506.7 L 439.6,508.7 L 441.6,504.7 L 437.6,500.7 L 443.6,496.7 Z" fill="#f8d7da" stroke="#dc3545" stroke-width="1"/>
+<title>ComplexValidation (complexity: 18)</title>
+<line x1="400.0" y1="470.0" x2="512.8" y2="429.0" stroke="#8B4513" stroke-width="7.5"/>
+<path d="M 401.1,452.1 Q 409.1,456.1 413.1,464.1 Q 409.1,472.1 401.1,470.1 Q 393.1,472.1 389.1,464.1 Q 393.1,456.1 401.1,452.1 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>CheckPositive (complexity: 2)</title>
+<path d="M 432.2,456.3 Q 440.2,460.3 444.2,468.3 Q 440.2,476.3 432.2,474.3 Q 424.2,476.3 420.2,468.3 Q 424.2,460.3 432.2,456.3 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>GetGrade (complexity: 4)</title>
+<path d="M 463.3,440.4 Q 471.3,444.4 475.3,452.4 Q 471.3,460.4 463.3,458.4 Q 455.3,460.4 451.3,452.4 Q 455.3,444.4 463.3,440.4 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>ProcessNumbers (complexity: 3)</title>
+<path d="M 449.4,444.5 Q 457.4,448.5 461.4,456.5 Q 457.4,464.5 449.4,462.5 Q 441.4,464.5 437.4,456.5 Q 441.4,448.5 449.4,444.5 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>SimpleFunction (complexity: 1)</title>
+<path d="M 480.5,428.7 Q 488.5,432.7 492.5,440.7 Q 488.5,448.7 480.5,446.7 Q 472.5,448.7 468.5,440.7 Q 472.5,432.7 480.5,428.7 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>AddTwoNumbers (complexity: 1)</title>
+<path d="M 511.7,432.8 Q 519.7,436.8 523.7,444.8 Q 519.7,452.8 511.7,450.8 Q 503.7,452.8 499.7,444.8 Q 503.7,436.8 511.7,432.8 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>GreetUser (complexity: 1)</title>
+<line x1="400.0" y1="430.0" x2="507.9" y2="377.4" stroke="#8B4513" stroke-width="7.0"/>
+<path d="M 403.0,411.2 Q 413.0,415.2 417.0,423.2 Q 409.0,431.2 403.0,429.2 Q 397.0,431.2 389.0,423.2 Q 393.0,415.2 403.0,411.2 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>ValidateInput (complexity: 7)</title>
+<path d="M 436.0,412.5 Q 446.0,416.5 450.0,424.5 Q 442.0,432.5 436.0,430.5 Q 430.0,432.5 422.0,424.5 Q 426.0,416.5 436.0,412.5 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>CalculateDiscount (complexity: 6)</title>
+<path d="M 468.9,391.7 Q 476.9,395.7 480.9,403.7 Q 476.9,411.7 468.9,409.7 Q 460.9,411.7 456.9,403.7 Q 460.9,395.7 468.9,391.7 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>FindPattern (complexity: 5)</title>
+<path d="M 456.9,394.9 Q 466.9,398.9 470.9,406.9 Q 462.9,414.9 456.9,412.9 Q 450.9,414.9 442.9,406.9 Q 446.9,398.9 456.9,394.9 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>ProcessMatrix (complexity: 7)</title>
+<path d="M 489.9,378.2 L 493.9,380.2 L 499.9,384.2 L 495.9,388.2 L 497.9,392.2 L 489.9,390.2 L 481.9,392.2 L 483.9,388.2 L 479.9,384.2 L 485.9,380.2 Z" fill="#f8d7da" stroke="#dc3545" stroke-width="1"/>
+<title>ValidateAndProcess (complexity: 13)</title>
+<line x1="400.0" y1="390.0" x2="507.9" y2="337.4" stroke="#8B4513" stroke-width="6.5"/>
+<path d="M 387.7,376.7 Q 395.7,380.7 399.7,388.7 Q 395.7,396.7 387.7,394.7 Q 379.7,396.7 375.7,388.7 Q 379.7,380.7 387.7,376.7 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>NewComplexityAnalyzer (complexity: 1)</title>
+<path d="M 405.4,385.4 Q 413.4,389.4 417.4,397.4 Q 413.4,405.4 405.4,403.4 Q 397.4,405.4 393.4,397.4 Q 397.4,389.4 405.4,385.4 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*ComplexityAnalyzer).AnalyzeDirectory (complexity: 5)</title>
+<path d="M 423.1,374.1 Q 431.1,378.1 435.1,386.1 Q 431.1,394.1 423.1,392.1 Q 415.1,394.1 411.1,386.1 Q 415.1,378.1 423.1,374.1 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*ComplexityAnalyzer).analyzeFile (complexity: 3)</title>
+<path d="M 395.8,382.7 Q 403.8,386.7 407.8,394.7 Q 403.8,402.7 395.8,400.7 Q 387.8,402.7 383.8,394.7 Q 387.8,386.7 395.8,382.7 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*ComplexityAnalyzer).GetComplexityLevel (complexity: 3)</title>
+<path d="M 413.5,371.4 Q 421.5,375.4 425.5,383.4 Q 421.5,391.4 413.5,389.4 Q 405.5,391.4 401.5,383.4 Q 405.5,375.4 413.5,371.4 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*ComplexityAnalyzer).GetComplexityColor (complexity: 4)</title>
+<path d="M 431.2,382.1 Q 441.2,386.1 445.2,394.1 Q 437.2,402.1 431.2,400.1 Q 425.2,402.1 417.2,394.1 Q 421.2,386.1 431.2,382.1 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>(*ComplexityAnalyzer).CalculatePackageComplexity (complexity: 8)</title>
+<path d="M 403.9,368.8 Q 411.9,372.8 415.9,380.8 Q 411.9,388.8 403.9,386.8 Q 395.9,388.8 391.9,380.8 Q 395.9,372.8 403.9,368.8 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*ComplexityAnalyzer).BuildComplexityTree (complexity: 3)</title>
+<path d="M 421.6,377.5 Q 429.6,381.5 433.6,389.5 Q 429.6,397.5 421.6,395.5 Q 413.6,397.5 409.6,389.5 Q 413.6,381.5 421.6,377.5 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*ComplexityTree).PrintTree (complexity: 1)</title>
+<path d="M 439.3,368.2 Q 449.3,372.2 453.3,380.2 Q 445.3,388.2 439.3,386.2 Q 433.3,388.2 425.3,380.2 Q 429.3,372.2 439.3,368.2 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>(*ComplexityTree).printNode (complexity: 6)</title>
+<path d="M 412.0,374.8 Q 420.0,378.8 424.0,386.8 Q 420.0,394.8 412.0,392.8 Q 404.0,394.8 400.0,386.8 Q 404.0,378.8 412.0,374.8 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*ComplexityTree).GetTreeStats (complexity: 3)</title>
+<path d="M 429.7,365.5 Q 439.7,369.5 443.7,377.5 Q 435.7,385.5 429.7,383.5 Q 423.7,385.5 415.7,377.5 Q 419.7,369.5 429.7,365.5 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>(*ComplexityAnalyzer).PrintComplexityReport (complexity: 6)</title>
+<path d="M 447.4,374.2 Q 457.4,378.2 461.4,386.2 Q 453.4,394.2 447.4,392.2 Q 441.4,394.2 433.4,386.2 Q 437.4,378.2 447.4,374.2 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>main (complexity: 9)</title>
+<path d="M 420.1,360.9 Q 428.1,364.9 432.1,372.9 Q 428.1,380.9 420.1,378.9 Q 412.1,380.9 408.1,372.9 Q 412.1,364.9 420.1,360.9 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>usage (complexity: 1)</title>
+<path d="M 437.7,369.6 Q 445.7,373.6 449.7,381.6 Q 445.7,389.6 437.7,387.6 Q 429.7,389.6 425.7,381.6 Q 429.7,373.6 437.7,369.6 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>NewSVGGenerator (complexity: 1)</title>
+<path d="M 455.4,358.3 Q 463.4,362.3 467.4,370.3 Q 463.4,378.3 455.4,376.3 Q 447.4,378.3 443.4,370.3 Q 447.4,362.3 455.4,358.3 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).GenerateSVG (complexity: 3)</title>
+<path d="M 428.1,367.0 Q 436.1,371.0 440.1,379.0 Q 436.1,387.0 428.1,385.0 Q 420.1,387.0 416.1,379.0 Q 420.1,371.0 428.1,367.0 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawTree (complexity: 5)</title>
+<path d="M 445.8,357.6 Q 455.8,361.6 459.8,369.6 Q 451.8,377.6 445.8,375.6 Q 439.8,377.6 431.8,369.6 Q 435.8,361.6 445.8,357.6 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>(*SVGGenerator).drawNode (complexity: 10)</title>
+<path d="M 463.5,364.3 Q 471.5,368.3 475.5,376.3 Q 471.5,384.3 463.5,382.3 Q 455.5,384.3 451.5,376.3 Q 455.5,368.3 463.5,364.3 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawNaturalTree (complexity: 2)</title>
+<path d="M 436.2,355.0 Q 446.2,359.0 450.2,367.0 Q 442.2,375.0 436.2,373.0 Q 430.2,375.0 422.2,367.0 Q 426.2,359.0 436.2,355.0 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+<title>(*SVGGenerator).calculateBranchPositions (complexity: 7)</title>
+<path d="M 453.9,361.7 Q 461.9,365.7 465.9,373.7 Q 461.9,381.7 453.9,379.7 Q 445.9,381.7 441.9,373.7 Q 445.9,365.7 453.9,361.7 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawNaturalTrunk (complexity: 1)</title>
+<path d="M 471.6,350.4 Q 479.6,354.4 483.6,362.4 Q 479.6,370.4 471.6,368.4 Q 463.6,370.4 459.6,362.4 Q 463.6,354.4 471.6,350.4 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawTrunkTexture (complexity: 3)</title>
+<path d="M 444.3,359.1 Q 452.3,363.1 456.3,371.1 Q 452.3,379.1 444.3,377.1 Q 436.3,379.1 432.3,371.1 Q 436.3,363.1 444.3,359.1 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).addBarkDetails (complexity: 3)</title>
+<path d="M 462.0,347.8 Q 470.0,351.8 474.0,359.8 Q 470.0,367.8 462.0,365.8 Q 454.0,367.8 450.0,359.8 Q 454.0,351.8 462.0,347.8 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawNaturalBranch (complexity: 2)</title>
+<path d="M 479.7,356.4 Q 487.7,360.4 491.7,368.4 Q 487.7,376.4 479.7,374.4 Q 471.7,376.4 467.7,368.4 Q 471.7,360.4 479.7,356.4 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawLeavesOnBranch (complexity: 2)</title>
+<path d="M 452.4,345.1 Q 460.4,349.1 464.4,357.1 Q 460.4,365.1 452.4,363.1 Q 444.4,365.1 440.4,357.1 Q 444.4,349.1 452.4,345.1 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawNaturalLeaf (complexity: 4)</title>
+<path d="M 470.1,353.8 Q 478.1,357.8 482.1,365.8 Q 478.1,373.8 470.1,371.8 Q 462.1,373.8 458.1,365.8 Q 462.1,357.8 470.1,353.8 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawNaturalHealthyLeaf (complexity: 1)</title>
+<path d="M 487.8,342.5 Q 495.8,346.5 499.8,354.5 Q 495.8,362.5 487.8,360.5 Q 479.8,362.5 475.8,354.5 Q 479.8,346.5 487.8,342.5 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawNaturalCautionLeaf (complexity: 1)</title>
+<path d="M 460.5,351.2 Q 468.5,355.2 472.5,363.2 Q 468.5,371.2 460.5,369.2 Q 452.5,371.2 448.5,363.2 Q 452.5,355.2 460.5,351.2 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawNaturalDangerLeaf (complexity: 1)</title>
+<path d="M 478.2,339.9 Q 486.2,343.9 490.2,351.9 Q 486.2,359.9 478.2,357.9 Q 470.2,359.9 466.2,351.9 Q 470.2,343.9 478.2,339.9 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawConnection (complexity: 1)</title>
+<path d="M 495.9,348.5 Q 503.9,352.5 507.9,360.5 Q 503.9,368.5 495.9,366.5 Q 487.9,368.5 483.9,360.5 Q 487.9,352.5 495.9,348.5 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawTrunk (complexity: 1)</title>
+<path d="M 468.6,337.2 Q 476.6,341.2 480.6,349.2 Q 476.6,357.2 468.6,355.2 Q 460.6,357.2 456.6,349.2 Q 460.6,341.2 468.6,337.2 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawBranch (complexity: 1)</title>
+<path d="M 486.3,345.9 Q 494.3,349.9 498.3,357.9 Q 494.3,365.9 486.3,363.9 Q 478.3,365.9 474.3,357.9 Q 478.3,349.9 486.3,345.9 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawLeaf (complexity: 4)</title>
+<path d="M 504.0,334.6 Q 512.0,338.6 516.0,346.6 Q 512.0,354.6 504.0,352.6 Q 496.0,354.6 492.0,346.6 Q 496.0,338.6 504.0,334.6 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawHealthyLeaf (complexity: 1)</title>
+<path d="M 476.7,343.3 Q 484.7,347.3 488.7,355.3 Q 484.7,363.3 476.7,361.3 Q 468.7,363.3 464.7,355.3 Q 468.7,347.3 476.7,343.3 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawCautionLeaf (complexity: 1)</title>
+<path d="M 494.4,332.0 Q 502.4,336.0 506.4,344.0 Q 502.4,352.0 494.4,350.0 Q 486.4,352.0 482.4,344.0 Q 486.4,336.0 494.4,332.0 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).drawDangerLeaf (complexity: 1)</title>
+<path d="M 512.1,340.7 Q 520.1,344.7 524.1,352.7 Q 520.1,360.7 512.1,358.7 Q 504.1,360.7 500.1,352.7 Q 504.1,344.7 512.1,340.7 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).getNodeColor (complexity: 4)</title>
+<path d="M 484.8,329.3 Q 492.8,333.3 496.8,341.3 Q 492.8,349.3 484.8,347.3 Q 476.8,349.3 472.8,341.3 Q 476.8,333.3 484.8,329.3 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).getStrokeColor (complexity: 4)</title>
+<path d="M 502.5,338.0 Q 510.5,342.0 514.5,350.0 Q 510.5,358.0 502.5,356.0 Q 494.5,358.0 490.5,350.0 Q 494.5,342.0 502.5,338.0 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>(*SVGGenerator).SaveSVG (complexity: 1)</title>
+<path d="M 520.2,326.7 Q 528.2,330.7 532.2,338.7 Q 528.2,346.7 520.2,344.7 Q 512.2,346.7 508.2,338.7 Q 512.2,330.7 520.2,326.7 Z" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+<title>WriteFile (complexity: 1)</title>
+</svg>

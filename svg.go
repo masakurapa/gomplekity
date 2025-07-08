@@ -201,38 +201,44 @@ func (svg *SVGGenerator) calculateBranchPositions(trunkX, trunkBaseY, trunkHeigh
 		// Branch height on trunk (distribute more evenly)
 		branchHeight := trunkBaseY - (trunkHeight * (float64(i+1) / float64(packageCount+1)))
 		
-		// Branch angle (alternate left and right with balanced distribution)
+		// Branch angle (alternate left and right, upward growth)
 		var angle float64
 		var branchSide string
 		
 		if i%2 == 0 {
-			// Left side branches: varying angles
-			baseAngle := -45.0
-			variation := float64(i/2) * 10.0
+			// Left side branches: upward angles from -20° to -50°
+			baseAngle := -20.0
+			variation := float64(i/2) * 6.0
 			angle = baseAngle - variation
 			branchSide = "left"
 		} else {
-			// Right side branches: varying angles
-			baseAngle := 45.0
-			variation := float64(i/2) * 10.0
+			// Right side branches: upward angles from 20° to 50°
+			baseAngle := 20.0
+			variation := float64(i/2) * 6.0
 			angle = baseAngle + variation
 			branchSide = "right"
 		}
 		
-		// Branch length based on number of functions and side
-		baseBranchLength := 80.0 + float64(len(packageNode.Children))*10
+		// Branch length (limited to reasonable size)
+		baseBranchLength := 60.0 + float64(len(packageNode.Children))*8
 		// Add some variation to make it more natural
 		var branchLength float64
 		if branchSide == "left" {
-			branchLength = baseBranchLength + float64(i%3)*15
+			branchLength = baseBranchLength + float64(i%3)*10
 		} else {
-			branchLength = baseBranchLength + float64((i+1)%3)*15
+			branchLength = baseBranchLength + float64((i+1)%3)*10
+		}
+		
+		// Limit branch length to prevent going off screen
+		if branchLength > 120.0 {
+			branchLength = 120.0
 		}
 		
 		// Calculate branch end position
 		angleRad := angle * math.Pi / 180
 		endX := trunkX + branchLength*math.Cos(angleRad)
-		endY := branchHeight + branchLength*math.Sin(angleRad)
+		// For upward branches, we want negative Y (SVG coordinates)
+		endY := branchHeight - branchLength*math.Abs(math.Sin(angleRad))
 		
 		branch := BranchInfo{
 			StartX:      trunkX,
