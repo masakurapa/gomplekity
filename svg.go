@@ -11,6 +11,7 @@ type SVGGenerator struct {
 	Width  int
 	Height int
 	tree   *ComplexityTree
+	Style  string // "hierarchical" or "natural"
 }
 
 // NewSVGGenerator creates a new SVG generator
@@ -19,6 +20,7 @@ func NewSVGGenerator(tree *ComplexityTree) *SVGGenerator {
 		Width:  800,
 		Height: 600,
 		tree:   tree,
+		Style:  "natural", // Default to natural tree style
 	}
 }
 
@@ -39,9 +41,13 @@ func (svg *SVGGenerator) GenerateSVG() string {
 	builder.WriteString("🌳 Complexity Tree Visualization")
 	builder.WriteString("</text>\n")
 	
-	// Draw tree
+	// Draw tree based on style
 	if svg.tree.Root != nil {
-		svg.drawTree(&builder)
+		if svg.Style == "natural" {
+			svg.drawNaturalTree(&builder)
+		} else {
+			svg.drawTree(&builder)
+		}
 	}
 	
 	// SVG footer
@@ -148,6 +154,209 @@ func (svg *SVGGenerator) drawNode(builder *strings.Builder, node *TreeNode, x, y
 		builder.WriteString(fmt.Sprintf("%d", node.Complexity))
 		builder.WriteString("</text>\n")
 	}
+}
+
+// drawNaturalTree draws a natural tree structure from bottom to top
+func (svg *SVGGenerator) drawNaturalTree(builder *strings.Builder) {
+	// Tree base parameters
+	trunkBaseX := float64(svg.Width) / 2
+	trunkBaseY := float64(svg.Height) - 50 // Start from bottom
+	trunkHeight := 200.0
+	trunkWidth := 60.0
+	
+	// Draw main trunk
+	svg.drawNaturalTrunk(builder, trunkBaseX, trunkBaseY, trunkWidth, trunkHeight)
+	
+	// Calculate branch positions
+	branches := svg.calculateBranchPositions(trunkBaseX, trunkBaseY, trunkHeight)
+	
+	// Draw branches and leaves
+	for i, branch := range branches {
+		svg.drawNaturalBranch(builder, branch, i)
+	}
+}
+
+// BranchInfo represents information about a branch
+type BranchInfo struct {
+	StartX, StartY float64
+	EndX, EndY     float64
+	Angle          float64
+	PackageNode    *TreeNode
+	Functions      []*TreeNode
+}
+
+// calculateBranchPositions calculates positions for branches based on packages
+func (svg *SVGGenerator) calculateBranchPositions(trunkX, trunkBaseY, trunkHeight float64) []BranchInfo {
+	var branches []BranchInfo
+	
+	if svg.tree.Root == nil || len(svg.tree.Root.Children) == 0 {
+		return branches
+	}
+	
+	packages := svg.tree.Root.Children
+	packageCount := len(packages)
+	
+	// Calculate branch positions along the trunk
+	for i, packageNode := range packages {
+		// Branch height on trunk (higher for later packages)
+		branchHeight := trunkBaseY - (trunkHeight * (float64(i+1) / float64(packageCount+1)))
+		
+		// Branch angle (alternate left and right)
+		var angle float64
+		if i%2 == 0 {
+			angle = -45 + float64(i*10) // Left side branches
+		} else {
+			angle = 45 - float64(i*10) // Right side branches
+		}
+		
+		// Branch length based on number of functions
+		branchLength := 80.0 + float64(len(packageNode.Children))*10
+		
+		// Calculate branch end position
+		angleRad := angle * math.Pi / 180
+		endX := trunkX + branchLength*math.Cos(angleRad)
+		endY := branchHeight + branchLength*math.Sin(angleRad)
+		
+		branch := BranchInfo{
+			StartX:      trunkX,
+			StartY:      branchHeight,
+			EndX:        endX,
+			EndY:        endY,
+			Angle:       angle,
+			PackageNode: packageNode,
+			Functions:   packageNode.Children,
+		}
+		
+		branches = append(branches, branch)
+	}
+	
+	return branches
+}
+
+// drawNaturalTrunk draws the main trunk of the tree
+func (svg *SVGGenerator) drawNaturalTrunk(builder *strings.Builder, baseX, baseY, width, height float64) {
+	// Draw trunk as a tapered rectangle (wider at bottom)
+	topWidth := width * 0.6
+	
+	// Create path for tapered trunk
+	path := fmt.Sprintf(`M %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f Z`,
+		baseX-width/2, baseY,           // Bottom left
+		baseX+width/2, baseY,           // Bottom right
+		baseX+topWidth/2, baseY-height, // Top right
+		baseX-topWidth/2, baseY-height) // Top left
+	
+	builder.WriteString(fmt.Sprintf(`<path d="%s" fill="#8B4513" stroke="#654321" stroke-width="2"/>`, path))
+	builder.WriteString("\n")
+}
+
+// drawNaturalBranch draws a branch with its leaves
+func (svg *SVGGenerator) drawNaturalBranch(builder *strings.Builder, branch BranchInfo, index int) {
+	// Draw branch line
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#8B4513" stroke-width="%.1f"/>`,
+		branch.StartX, branch.StartY, branch.EndX, branch.EndY, math.Max(8.0-float64(index)*0.5, 3.0)))
+	builder.WriteString("\n")
+	
+	// Draw leaves along the branch
+	if len(branch.Functions) > 0 {
+		svg.drawLeavesOnBranch(builder, branch)
+	}
+}
+
+// drawLeavesOnBranch draws leaves along a branch
+func (svg *SVGGenerator) drawLeavesOnBranch(builder *strings.Builder, branch BranchInfo) {
+	functionCount := len(branch.Functions)
+	
+	for i, functionNode := range branch.Functions {
+		// Calculate leaf position along the branch
+		t := float64(i+1) / float64(functionCount+1)
+		leafX := branch.StartX + (branch.EndX-branch.StartX)*t
+		leafY := branch.StartY + (branch.EndY-branch.StartY)*t
+		
+		// Add some randomness to leaf position
+		offsetX := float64((i%3-1)) * 15 // -15, 0, or 15
+		offsetY := float64((i%2)) * 10   // 0 or 10
+		
+		leafX += offsetX
+		leafY += offsetY
+		
+		// Draw leaf based on complexity
+		svg.drawNaturalLeaf(builder, leafX, leafY, functionNode)
+	}
+}
+
+// drawNaturalLeaf draws a single leaf in natural style
+func (svg *SVGGenerator) drawNaturalLeaf(builder *strings.Builder, x, y float64, functionNode *TreeNode) {
+	fillColor := svg.getNodeColor(functionNode.Level)
+	strokeColor := svg.getStrokeColor(functionNode.Level)
+	
+	// Draw leaf shape based on complexity level
+	switch functionNode.Level {
+	case "low":
+		svg.drawNaturalHealthyLeaf(builder, x, y, fillColor, strokeColor)
+	case "medium":
+		svg.drawNaturalCautionLeaf(builder, x, y, fillColor, strokeColor)
+	case "high":
+		svg.drawNaturalDangerLeaf(builder, x, y, fillColor, strokeColor)
+	}
+	
+	// Add function name as tooltip
+	builder.WriteString(fmt.Sprintf(`<title>%s (complexity: %d)</title>`, functionNode.Name, functionNode.Complexity))
+	builder.WriteString("\n")
+}
+
+// drawNaturalHealthyLeaf draws a healthy leaf
+func (svg *SVGGenerator) drawNaturalHealthyLeaf(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	// Draw as natural leaf shape
+	path := fmt.Sprintf(`M %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Z`,
+		x, y-12,        // Top point
+		x+8, y-8,       // Right curve control
+		x+12, y,        // Right point
+		x+8, y+8,       // Bottom right control
+		x, y+6,         // Bottom point
+		x-8, y+8,       // Bottom left control
+		x-12, y,        // Left point
+		x-8, y-8,       // Top left control
+		x, y-12)        // Back to top
+	
+	builder.WriteString(fmt.Sprintf(`<path d="%s" fill="%s" stroke="%s" stroke-width="1"/>`, path, fillColor, strokeColor))
+	builder.WriteString("\n")
+}
+
+// drawNaturalCautionLeaf draws a caution leaf
+func (svg *SVGGenerator) drawNaturalCautionLeaf(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	// Slightly different shape for caution
+	path := fmt.Sprintf(`M %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Z`,
+		x, y-10,        // Top point
+		x+10, y-6,      // Right curve control
+		x+14, y+2,      // Right point
+		x+6, y+10,      // Bottom right control
+		x, y+8,         // Bottom point
+		x-6, y+10,      // Bottom left control
+		x-14, y+2,      // Left point
+		x-10, y-6,      // Top left control
+		x, y-10)        // Back to top
+	
+	builder.WriteString(fmt.Sprintf(`<path d="%s" fill="%s" stroke="%s" stroke-width="1"/>`, path, fillColor, strokeColor))
+	builder.WriteString("\n")
+}
+
+// drawNaturalDangerLeaf draws a danger leaf (withered)
+func (svg *SVGGenerator) drawNaturalDangerLeaf(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	// Jagged, withered shape
+	path := fmt.Sprintf(`M %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f Z`,
+		x, y-8,         // Top
+		x+4, y-6,       // Right top
+		x+10, y-2,      // Right
+		x+6, y+2,       // Right bottom
+		x+8, y+6,       // Bottom right
+		x, y+4,         // Bottom
+		x-8, y+6,       // Bottom left
+		x-6, y+2,       // Left bottom
+		x-10, y-2,      // Left
+		x-4, y-6)       // Back to top
+	
+	builder.WriteString(fmt.Sprintf(`<path d="%s" fill="%s" stroke="%s" stroke-width="1"/>`, path, fillColor, strokeColor))
+	builder.WriteString("\n")
 }
 
 // drawConnection draws a line between two nodes
