@@ -384,11 +384,11 @@ func (svg *SVGGenerator) drawLeavesOnBranch(builder *strings.Builder, branch Bra
 		baseY := branch.StartY + (branch.EndY-branch.StartY)*t
 		
 		// Create circular distribution around the branch tip
-		radius := 25.0 + float64(i)*5.0 // Varying radius for natural look
+		radius := 8.0 + float64(i)*3.0 // Smaller radius, closer to branch
 		angle := float64(i) * 2 * math.Pi / float64(functionCount)
 		
 		// Add some randomness to angle for natural variation
-		angleOffset := (float64(i%5) - 2) * 0.3 // -0.6 to 0.6 radians
+		angleOffset := (float64(i%5) - 2) * 0.2 // -0.4 to 0.4 radians
 		angle += angleOffset
 		
 		leafX := baseX + radius*math.Cos(angle)
