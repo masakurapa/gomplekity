@@ -96,30 +96,22 @@ func (svg *SVGGenerator) drawTree(builder *strings.Builder) {
 
 // drawNode draws a single node
 func (svg *SVGGenerator) drawNode(builder *strings.Builder, node *TreeNode, x, y float64, level, index int) {
-	// Node appearance based on type and complexity
-	var radius float64
-	var strokeWidth int
-	
-	switch node.NodeType {
-	case "root":
-		radius = 25
-		strokeWidth = 3
-	case "package":
-		radius = 20
-		strokeWidth = 2
-	case "function":
-		radius = 15
-		strokeWidth = 1
-	}
-	
 	// Get color based on complexity level
 	fillColor := svg.getNodeColor(node.Level)
 	strokeColor := svg.getStrokeColor(node.Level)
 	
-	// Draw circle
-	builder.WriteString(fmt.Sprintf(`<circle cx="%.1f" cy="%.1f" r="%.1f" fill="%s" stroke="%s" stroke-width="%d"/>`,
-		x, y, radius, fillColor, strokeColor, strokeWidth))
-	builder.WriteString("\n")
+	// Draw different shapes based on node type
+	switch node.NodeType {
+	case "root":
+		// Draw trunk as rectangle
+		svg.drawTrunk(builder, x, y, fillColor, strokeColor)
+	case "package":
+		// Draw branch as rounded rectangle
+		svg.drawBranch(builder, x, y, fillColor, strokeColor)
+	case "function":
+		// Draw leaf shape
+		svg.drawLeaf(builder, x, y, fillColor, strokeColor, node.Level)
+	}
 	
 	// Draw node label
 	var fontSize int
@@ -145,8 +137,14 @@ func (svg *SVGGenerator) drawNode(builder *strings.Builder, node *TreeNode, x, y
 	
 	// Draw complexity value for non-root nodes
 	if node.NodeType != "root" {
+		var offset float64
+		if node.NodeType == "function" {
+			offset = 25 // More space for leaf shape
+		} else {
+			offset = 20
+		}
 		builder.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" text-anchor="middle" font-family="Arial" font-size="10" fill="#666">`,
-			x, y+radius+15))
+			x, y+offset))
 		builder.WriteString(fmt.Sprintf("%d", node.Complexity))
 		builder.WriteString("</text>\n")
 	}
@@ -156,6 +154,94 @@ func (svg *SVGGenerator) drawNode(builder *strings.Builder, node *TreeNode, x, y
 func (svg *SVGGenerator) drawConnection(builder *strings.Builder, x1, y1, x2, y2 float64) {
 	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#666" stroke-width="1"/>`,
 		x1, y1, x2, y2))
+	builder.WriteString("\n")
+}
+
+// drawTrunk draws a trunk shape for the root node
+func (svg *SVGGenerator) drawTrunk(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	width := 40.0
+	height := 50.0
+	
+	// Draw trunk as rounded rectangle
+	builder.WriteString(fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="5" ry="5" fill="%s" stroke="%s" stroke-width="3"/>`,
+		x-width/2, y-height/2, width, height, "#8B4513", "#654321"))
+	builder.WriteString("\n")
+}
+
+// drawBranch draws a branch shape for package nodes
+func (svg *SVGGenerator) drawBranch(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	width := 60.0
+	height := 20.0
+	
+	// Draw branch as rounded rectangle
+	builder.WriteString(fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="10" ry="10" fill="%s" stroke="%s" stroke-width="2"/>`,
+		x-width/2, y-height/2, width, height, "#8B4513", "#654321"))
+	builder.WriteString("\n")
+}
+
+// drawLeaf draws a leaf shape for function nodes
+func (svg *SVGGenerator) drawLeaf(builder *strings.Builder, x, y float64, fillColor, strokeColor string, level string) {
+	// Draw leaf as ellipse or different shapes based on complexity
+	switch level {
+	case "low":
+		// Healthy green leaf - simple ellipse
+		svg.drawHealthyLeaf(builder, x, y, fillColor, strokeColor)
+	case "medium":
+		// Caution yellow leaf - slightly different shape
+		svg.drawCautionLeaf(builder, x, y, fillColor, strokeColor)
+	case "high":
+		// Danger red leaf - withered/jagged shape
+		svg.drawDangerLeaf(builder, x, y, fillColor, strokeColor)
+	}
+}
+
+// drawHealthyLeaf draws a healthy green leaf
+func (svg *SVGGenerator) drawHealthyLeaf(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	// Draw as a simple ellipse
+	builder.WriteString(fmt.Sprintf(`<ellipse cx="%.1f" cy="%.1f" rx="18" ry="12" fill="%s" stroke="%s" stroke-width="1"/>`,
+		x, y, fillColor, strokeColor))
+	builder.WriteString("\n")
+	
+	// Add leaf vein
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1" opacity="0.6"/>`,
+		x-10, y, x+10, y, strokeColor))
+	builder.WriteString("\n")
+}
+
+// drawCautionLeaf draws a caution yellow leaf
+func (svg *SVGGenerator) drawCautionLeaf(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	// Draw as a slightly pointed ellipse
+	builder.WriteString(fmt.Sprintf(`<ellipse cx="%.1f" cy="%.1f" rx="16" ry="14" fill="%s" stroke="%s" stroke-width="1"/>`,
+		x, y, fillColor, strokeColor))
+	builder.WriteString("\n")
+	
+	// Add leaf vein
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1" opacity="0.6"/>`,
+		x-8, y, x+8, y, strokeColor))
+	builder.WriteString("\n")
+	
+	// Add small warning dots
+	builder.WriteString(fmt.Sprintf(`<circle cx="%.1f" cy="%.1f" r="2" fill="%s" opacity="0.8"/>`,
+		x-5, y-3, strokeColor))
+	builder.WriteString("\n")
+}
+
+// drawDangerLeaf draws a danger red leaf (withered)
+func (svg *SVGGenerator) drawDangerLeaf(builder *strings.Builder, x, y float64, fillColor, strokeColor string) {
+	// Draw as a jagged/withered shape using path
+	path := fmt.Sprintf(`M %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Q %.1f,%.1f %.1f,%.1f Z`,
+		x-15, y, x-8, y-10, x, y-5, x+8, y-12, x+15, y, x+8, y+10, x, y+8, x-8, y+12, x-15, y)
+	
+	builder.WriteString(fmt.Sprintf(`<path d="%s" fill="%s" stroke="%s" stroke-width="1"/>`,
+		path, fillColor, strokeColor))
+	builder.WriteString("\n")
+	
+	// Add cracks/stress lines
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1" opacity="0.8"/>`,
+		x-5, y-5, x+5, y+5, strokeColor))
+	builder.WriteString("\n")
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1" opacity="0.8"/>`,
+		x-5, y+5, x+5, y-5, strokeColor))
 	builder.WriteString("\n")
 }
 
