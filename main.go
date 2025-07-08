@@ -29,8 +29,22 @@ func main() {
 		fmt.Printf("Output file: %s\n", *outputFile)
 	}
 
-	// TODO: Implement complexity analysis
-	fmt.Println("🌳 Gomplekity analysis coming soon...")
+	// Create complexity analyzer
+	analyzer := NewComplexityAnalyzer(*lowThreshold, *midThreshold)
+	
+	// Analyze the directory
+	functions, err := analyzer.AnalyzeDirectory(*targetDir)
+	if err != nil {
+		fmt.Printf("Error analyzing directory: %v\n", err)
+		return
+	}
+
+	// Print complexity report
+	analyzer.PrintComplexityReport(functions)
+
+	// TODO: Generate visualization output
+	fmt.Printf("\n🎨 Generating %s visualization...\n", *outputFormat)
+	fmt.Println("🌳 Visualization generation coming soon...")
 }
 
 func showHelp() {
