@@ -47,9 +47,34 @@ func main() {
 	fmt.Printf("\n")
 	tree.PrintTree()
 
-	// TODO: Generate visualization output
+	// Generate visualization output
 	fmt.Printf("\n🎨 Generating %s visualization...\n", *outputFormat)
-	fmt.Println("🌳 Visualization generation coming soon...")
+	
+	switch *outputFormat {
+	case "svg":
+		outputFileName := *outputFile
+		if outputFileName == "" {
+			outputFileName = "complexity.svg"
+		}
+		
+		svgGenerator := NewSVGGenerator(tree)
+		err := svgGenerator.SaveSVG(outputFileName)
+		if err != nil {
+			fmt.Printf("Error generating SVG: %v\n", err)
+			return
+		}
+		
+		fmt.Printf("✅ SVG visualization saved to: %s\n", outputFileName)
+		
+	case "html":
+		fmt.Println("🔧 HTML output coming soon...")
+		
+	case "png":
+		fmt.Println("🔧 PNG output coming soon...")
+		
+	default:
+		fmt.Printf("❌ Unsupported output format: %s\n", *outputFormat)
+	}
 }
 
 func usage() {
