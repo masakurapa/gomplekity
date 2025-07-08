@@ -31,7 +31,7 @@ func main() {
 
 	// Create complexity analyzer
 	analyzer := NewComplexityAnalyzer(*lowThreshold, *midThreshold)
-	
+
 	// Analyze the directory
 	functions, err := analyzer.AnalyzeDirectory(*targetDir)
 	if err != nil {

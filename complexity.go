@@ -20,6 +20,16 @@ type FunctionComplexity struct {
 	Complexity int
 }
 
+// PackageComplexity represents the complexity statistics of a package
+type PackageComplexity struct {
+	PackageName     string
+	Functions       []FunctionComplexity
+	TotalComplexity int
+	AverageComplexity float64
+	MaxComplexity   int
+	MinComplexity   int
+}
+
 // ComplexityAnalyzer analyzes the cyclomatic complexity of Go files
 type ComplexityAnalyzer struct {
 	lowThreshold    int
@@ -75,7 +85,7 @@ func (ca *ComplexityAnalyzer) analyzeFile(filename string) ([]FunctionComplexity
 
 	var stats gocyclo.Stats
 	stats = gocyclo.AnalyzeASTFile(node, fset, stats)
-	
+
 	var functions []FunctionComplexity
 	for _, stat := range stats {
 		functions = append(functions, FunctionComplexity{
@@ -114,18 +124,80 @@ func (ca *ComplexityAnalyzer) GetComplexityColor(complexity int) string {
 	}
 }
 
+// CalculatePackageComplexity calculates package-level complexity statistics
+func (ca *ComplexityAnalyzer) CalculatePackageComplexity(functions []FunctionComplexity) map[string]PackageComplexity {
+	packageMap := make(map[string][]FunctionComplexity)
+	
+	// Group functions by package (extracted from file path)
+	for _, fn := range functions {
+		// Extract package name from file path
+		packageName := filepath.Dir(fn.File)
+		if packageName == "." {
+			packageName = "main"
+		}
+		
+		packageMap[packageName] = append(packageMap[packageName], fn)
+	}
+	
+	packages := make(map[string]PackageComplexity)
+	
+	for packageName, packageFunctions := range packageMap {
+		if len(packageFunctions) == 0 {
+			continue
+		}
+		
+		total := 0
+		min := packageFunctions[0].Complexity
+		max := packageFunctions[0].Complexity
+		
+		for _, fn := range packageFunctions {
+			total += fn.Complexity
+			if fn.Complexity < min {
+				min = fn.Complexity
+			}
+			if fn.Complexity > max {
+				max = fn.Complexity
+			}
+		}
+		
+		average := float64(total) / float64(len(packageFunctions))
+		
+		packages[packageName] = PackageComplexity{
+			PackageName:       packageName,
+			Functions:         packageFunctions,
+			TotalComplexity:   total,
+			AverageComplexity: average,
+			MaxComplexity:     max,
+			MinComplexity:     min,
+		}
+	}
+	
+	return packages
+}
+
 // PrintComplexityReport prints a formatted complexity report
 func (ca *ComplexityAnalyzer) PrintComplexityReport(functions []FunctionComplexity) {
 	fmt.Printf("🌳 Complexity Analysis Report\n")
 	fmt.Printf("================================\n")
-	fmt.Printf("Thresholds: Low ≤ %d, Medium ≤ %d, High > %d\n\n", 
+	fmt.Printf("Thresholds: Low ≤ %d, Medium ≤ %d, High > %d\n\n",
 		ca.lowThreshold, ca.mediumThreshold, ca.mediumThreshold)
+
+	// Calculate package statistics
+	packages := ca.CalculatePackageComplexity(functions)
+	
+	fmt.Printf("📦 Package Statistics:\n")
+	for packageName, pkg := range packages {
+		fmt.Printf("  %s: avg=%.1f, max=%d, min=%d, total=%d (%d functions)\n",
+			packageName, pkg.AverageComplexity, pkg.MaxComplexity, pkg.MinComplexity, 
+			pkg.TotalComplexity, len(pkg.Functions))
+	}
+	fmt.Printf("\n🔍 Function Details:\n")
 
 	lowCount, mediumCount, highCount := 0, 0, 0
 
 	for _, fn := range functions {
 		level := ca.GetComplexityLevel(fn.Complexity)
-		
+
 		var emoji string
 		switch level {
 		case "low":
@@ -139,7 +211,7 @@ func (ca *ComplexityAnalyzer) PrintComplexityReport(functions []FunctionComplexi
 			highCount++
 		}
 
-		fmt.Printf("%s %s (%s): %d - %s:%d\n", 
+		fmt.Printf("%s %s (%s): %d - %s:%d\n",
 			emoji, fn.Name, level, fn.Complexity, fn.File, fn.Line)
 	}
 
