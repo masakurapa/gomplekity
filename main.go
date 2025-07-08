@@ -42,6 +42,11 @@ func main() {
 	// Print complexity report
 	analyzer.PrintComplexityReport(functions)
 
+	// Build and display tree structure
+	tree := analyzer.BuildComplexityTree(functions)
+	fmt.Printf("\n")
+	tree.PrintTree()
+
 	// TODO: Generate visualization output
 	fmt.Printf("\n🎨 Generating %s visualization...\n", *outputFormat)
 	fmt.Println("🌳 Visualization generation coming soon...")

@@ -30,6 +30,22 @@ type PackageComplexity struct {
 	MinComplexity   int
 }
 
+// TreeNode represents a node in the complexity tree
+type TreeNode struct {
+	Name       string
+	NodeType   string // "root", "package", "function"
+	Complexity int
+	Level      string // "low", "medium", "high"
+	Color      string // "green", "yellow", "red"
+	Children   []*TreeNode
+	Parent     *TreeNode
+}
+
+// ComplexityTree represents the entire complexity tree structure
+type ComplexityTree struct {
+	Root *TreeNode
+}
+
 // ComplexityAnalyzer analyzes the cyclomatic complexity of Go files
 type ComplexityAnalyzer struct {
 	lowThreshold    int
@@ -173,6 +189,102 @@ func (ca *ComplexityAnalyzer) CalculatePackageComplexity(functions []FunctionCom
 	}
 	
 	return packages
+}
+
+// BuildComplexityTree builds a tree structure from complexity data
+func (ca *ComplexityAnalyzer) BuildComplexityTree(functions []FunctionComplexity) *ComplexityTree {
+	// Create root node
+	root := &TreeNode{
+		Name:     "Project Root",
+		NodeType: "root",
+		Level:    "low",
+		Color:    "green",
+		Children: []*TreeNode{},
+	}
+
+	// Calculate package statistics
+	packages := ca.CalculatePackageComplexity(functions)
+
+	// Create package nodes
+	for packageName, pkg := range packages {
+		packageNode := &TreeNode{
+			Name:       packageName,
+			NodeType:   "package",
+			Complexity: pkg.TotalComplexity,
+			Level:      ca.GetComplexityLevel(int(pkg.AverageComplexity)),
+			Color:      ca.GetComplexityColor(int(pkg.AverageComplexity)),
+			Children:   []*TreeNode{},
+			Parent:     root,
+		}
+
+		// Create function nodes for this package
+		for _, fn := range pkg.Functions {
+			functionNode := &TreeNode{
+				Name:       fn.Name,
+				NodeType:   "function",
+				Complexity: fn.Complexity,
+				Level:      ca.GetComplexityLevel(fn.Complexity),
+				Color:      ca.GetComplexityColor(fn.Complexity),
+				Children:   []*TreeNode{},
+				Parent:     packageNode,
+			}
+			packageNode.Children = append(packageNode.Children, functionNode)
+		}
+
+		root.Children = append(root.Children, packageNode)
+	}
+
+	return &ComplexityTree{Root: root}
+}
+
+// PrintTree prints the tree structure for debugging
+func (tree *ComplexityTree) PrintTree() {
+	fmt.Printf("🌳 Complexity Tree Structure\n")
+	fmt.Printf("=============================\n")
+	tree.printNode(tree.Root, 0)
+}
+
+// printNode recursively prints tree nodes with indentation
+func (tree *ComplexityTree) printNode(node *TreeNode, depth int) {
+	indent := strings.Repeat("  ", depth)
+	
+	var emoji string
+	switch node.Level {
+	case "low":
+		emoji = "🟢"
+	case "medium":
+		emoji = "🟡"
+	case "high":
+		emoji = "🔴"
+	default:
+		emoji = "⚪"
+	}
+	
+	complexityInfo := ""
+	if node.NodeType != "root" {
+		complexityInfo = fmt.Sprintf(" (complexity: %d)", node.Complexity)
+	}
+	
+	fmt.Printf("%s%s %s [%s]%s\n", indent, emoji, node.Name, node.NodeType, complexityInfo)
+	
+	for _, child := range node.Children {
+		tree.printNode(child, depth+1)
+	}
+}
+
+// GetTreeStats returns statistics about the tree structure
+func (tree *ComplexityTree) GetTreeStats() (int, int, int) {
+	packageCount := 0
+	functionCount := 0
+	
+	for _, packageNode := range tree.Root.Children {
+		if packageNode.NodeType == "package" {
+			packageCount++
+			functionCount += len(packageNode.Children)
+		}
+	}
+	
+	return packageCount, functionCount, functionCount
 }
 
 // PrintComplexityReport prints a formatted complexity report
