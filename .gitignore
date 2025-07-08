@@ -33,3 +33,11 @@ go.work.sum
 
 # Claude task management
 .claude/
+
+# Generated output files (don't commit test outputs)
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.html

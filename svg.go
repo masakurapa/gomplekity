@@ -206,13 +206,13 @@ func (svg *SVGGenerator) calculateBranchPositions(trunkX, trunkBaseY, trunkHeigh
 		var branchSide string
 		
 		if i%2 == 0 {
-			// Left side branches: upward angles from -20° to -50°
-			baseAngle := -20.0
+			// Left side branches: upward angles from 160° to 130° (top-left quadrant)
+			baseAngle := 160.0
 			variation := float64(i/2) * 6.0
 			angle = baseAngle - variation
 			branchSide = "left"
 		} else {
-			// Right side branches: upward angles from 20° to 50°
+			// Right side branches: upward angles from 20° to 50° (top-right quadrant)
 			baseAngle := 20.0
 			variation := float64(i/2) * 6.0
 			angle = baseAngle + variation
@@ -238,7 +238,7 @@ func (svg *SVGGenerator) calculateBranchPositions(trunkX, trunkBaseY, trunkHeigh
 		angleRad := angle * math.Pi / 180
 		endX := trunkX + branchLength*math.Cos(angleRad)
 		// For upward branches, we want negative Y (SVG coordinates)
-		endY := branchHeight - branchLength*math.Abs(math.Sin(angleRad))
+		endY := branchHeight - branchLength*math.Sin(angleRad)
 		
 		branch := BranchInfo{
 			StartX:      trunkX,
