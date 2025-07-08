@@ -17,7 +17,7 @@ func main() {
 	flag.Parse()
 
 	if *help {
-		showHelp()
+		usage()
 		return
 	}
 
@@ -47,7 +47,7 @@ func main() {
 	fmt.Println("🌳 Visualization generation coming soon...")
 }
 
-func showHelp() {
+func usage() {
 	fmt.Println("Gomplekity - Go Complexity Tree Visualizer")
 	fmt.Println("")
 	fmt.Println("USAGE:")
