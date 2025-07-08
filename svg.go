@@ -198,19 +198,36 @@ func (svg *SVGGenerator) calculateBranchPositions(trunkX, trunkBaseY, trunkHeigh
 	
 	// Calculate branch positions along the trunk
 	for i, packageNode := range packages {
-		// Branch height on trunk (higher for later packages)
+		// Branch height on trunk (distribute more evenly)
 		branchHeight := trunkBaseY - (trunkHeight * (float64(i+1) / float64(packageCount+1)))
 		
-		// Branch angle (alternate left and right)
+		// Branch angle (alternate left and right with balanced distribution)
 		var angle float64
+		var branchSide string
+		
 		if i%2 == 0 {
-			angle = -45 + float64(i*10) // Left side branches
+			// Left side branches: varying angles
+			baseAngle := -45.0
+			variation := float64(i/2) * 10.0
+			angle = baseAngle - variation
+			branchSide = "left"
 		} else {
-			angle = 45 - float64(i*10) // Right side branches
+			// Right side branches: varying angles
+			baseAngle := 45.0
+			variation := float64(i/2) * 10.0
+			angle = baseAngle + variation
+			branchSide = "right"
 		}
 		
-		// Branch length based on number of functions
-		branchLength := 80.0 + float64(len(packageNode.Children))*10
+		// Branch length based on number of functions and side
+		baseBranchLength := 80.0 + float64(len(packageNode.Children))*10
+		// Add some variation to make it more natural
+		var branchLength float64
+		if branchSide == "left" {
+			branchLength = baseBranchLength + float64(i%3)*15
+		} else {
+			branchLength = baseBranchLength + float64((i+1)%3)*15
+		}
 		
 		// Calculate branch end position
 		angleRad := angle * math.Pi / 180
