@@ -245,8 +245,95 @@ func (svg *SVGGenerator) drawNaturalTrunk(builder *strings.Builder, baseX, baseY
 		baseX+topWidth/2, baseY-height, // Top right
 		baseX-topWidth/2, baseY-height) // Top left
 	
+	// Draw main trunk
 	builder.WriteString(fmt.Sprintf(`<path d="%s" fill="#8B4513" stroke="#654321" stroke-width="2"/>`, path))
 	builder.WriteString("\n")
+	
+	// Add realistic bark texture and wood grain
+	svg.drawTrunkTexture(builder, baseX, baseY, width, height, topWidth)
+}
+
+// drawTrunkTexture adds realistic bark texture and wood grain to the trunk
+func (svg *SVGGenerator) drawTrunkTexture(builder *strings.Builder, baseX, baseY, width, height, topWidth float64) {
+	// Add vertical wood grain lines
+	grainCount := 5
+	for i := 0; i < grainCount; i++ {
+		// Calculate position across trunk width
+		t := float64(i) / float64(grainCount-1)
+		
+		// Bottom position
+		bottomX := baseX - width/2 + width*t
+		// Top position (accounting for taper)
+		topX := baseX - topWidth/2 + topWidth*t
+		
+		// Add slight curve to make it more natural
+		midX := bottomX + (topX-bottomX)*0.5 + float64(i%2)*8 - 4
+		
+		// Draw curved grain line
+		grainPath := fmt.Sprintf(`M %.1f,%.1f Q %.1f,%.1f %.1f,%.1f`,
+			bottomX, baseY,
+			midX, baseY-height/2,
+			topX, baseY-height)
+		
+		builder.WriteString(fmt.Sprintf(`<path d="%s" fill="none" stroke="#654321" stroke-width="1" opacity="0.6"/>`, grainPath))
+		builder.WriteString("\n")
+	}
+	
+	// Add horizontal bark texture lines
+	barkLines := 8
+	for i := 1; i < barkLines; i++ {
+		y := baseY - (height * float64(i) / float64(barkLines))
+		
+		// Calculate width at this height
+		currentWidth := width - (width-topWidth)*(float64(i)/float64(barkLines))
+		
+		// Add slight irregularity
+		leftX := baseX - currentWidth/2 + float64((i%3-1))*2
+		rightX := baseX + currentWidth/2 - float64((i%3-1))*2
+		
+		builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#654321" stroke-width="0.8" opacity="0.4"/>`,
+			leftX, y, rightX, y))
+		builder.WriteString("\n")
+	}
+	
+	// Add bark bumps and knots
+	svg.addBarkDetails(builder, baseX, baseY, width, height, topWidth)
+}
+
+// addBarkDetails adds small bark details like knots and bumps
+func (svg *SVGGenerator) addBarkDetails(builder *strings.Builder, baseX, baseY, width, height, topWidth float64) {
+	// Add a few knots
+	knots := []struct{ x, y, size float64 }{
+		{baseX - 8, baseY - height*0.3, 4},
+		{baseX + 12, baseY - height*0.6, 3},
+		{baseX - 6, baseY - height*0.8, 2},
+	}
+	
+	for _, knot := range knots {
+		// Draw knot as small ellipse
+		builder.WriteString(fmt.Sprintf(`<ellipse cx="%.1f" cy="%.1f" rx="%.1f" ry="%.1f" fill="#654321" opacity="0.8"/>`,
+			knot.x, knot.y, knot.size, knot.size*0.7))
+		builder.WriteString("\n")
+		
+		// Add highlight on knot
+		builder.WriteString(fmt.Sprintf(`<ellipse cx="%.1f" cy="%.1f" rx="%.1f" ry="%.1f" fill="#A0522D" opacity="0.6"/>`,
+			knot.x-0.5, knot.y-0.5, knot.size*0.6, knot.size*0.4))
+		builder.WriteString("\n")
+	}
+	
+	// Add some bark ridges
+	ridges := []struct{ x, y, width, height float64 }{
+		{baseX - 15, baseY - height*0.2, 8, 15},
+		{baseX + 10, baseY - height*0.4, 6, 12},
+		{baseX - 5, baseY - height*0.7, 4, 8},
+	}
+	
+	for _, ridge := range ridges {
+		// Draw ridge as small rounded rectangle
+		builder.WriteString(fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="2" ry="2" fill="#654321" opacity="0.5"/>`,
+			ridge.x-ridge.width/2, ridge.y-ridge.height/2, ridge.width, ridge.height))
+		builder.WriteString("\n")
+	}
 }
 
 // drawNaturalBranch draws a branch with its leaves
