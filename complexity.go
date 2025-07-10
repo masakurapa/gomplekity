@@ -91,6 +91,43 @@ func (ca *ComplexityAnalyzer) AnalyzeDirectory(dir string) ([]FunctionComplexity
 	return functions, err
 }
 
+// AnalyzeTopDirectoryOnly analyzes only Go files in the specified directory (no subdirectories)
+func (ca *ComplexityAnalyzer) AnalyzeTopDirectoryOnly(dir string) ([]FunctionComplexity, error) {
+	var functions []FunctionComplexity
+
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory %s: %w", dir, err)
+	}
+
+	for _, file := range files {
+		// Skip directories
+		if file.IsDir() {
+			continue
+		}
+
+		// Skip non-Go files
+		if !strings.HasSuffix(file.Name(), ".go") {
+			continue
+		}
+
+		// Skip test files
+		if strings.HasSuffix(file.Name(), "_test.go") {
+			continue
+		}
+
+		filePath := filepath.Join(dir, file.Name())
+		funcs, err := ca.analyzeFile(filePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to analyze file %s: %w", filePath, err)
+		}
+
+		functions = append(functions, funcs...)
+	}
+
+	return functions, nil
+}
+
 // analyzeFile analyzes a single Go file
 func (ca *ComplexityAnalyzer) analyzeFile(filename string) ([]FunctionComplexity, error) {
 	fset := token.NewFileSet()
@@ -191,7 +228,7 @@ func (ca *ComplexityAnalyzer) CalculatePackageComplexity(functions []FunctionCom
 	return packages
 }
 
-// BuildComplexityTree builds a tree structure from complexity data
+// BuildComplexityTree builds a tree structure from complexity data organized by files
 func (ca *ComplexityAnalyzer) BuildComplexityTree(functions []FunctionComplexity) *ComplexityTree {
 	// Create root node
 	root := &TreeNode{
@@ -202,23 +239,34 @@ func (ca *ComplexityAnalyzer) BuildComplexityTree(functions []FunctionComplexity
 		Children: []*TreeNode{},
 	}
 
-	// Calculate package statistics
-	packages := ca.CalculatePackageComplexity(functions)
+	// Group functions by file
+	fileMap := make(map[string][]FunctionComplexity)
+	for _, fn := range functions {
+		fileName := filepath.Base(fn.File)
+		fileMap[fileName] = append(fileMap[fileName], fn)
+	}
 
-	// Create package nodes
-	for packageName, pkg := range packages {
-		packageNode := &TreeNode{
-			Name:       packageName,
-			NodeType:   "package",
-			Complexity: pkg.TotalComplexity,
-			Level:      ca.GetComplexityLevel(int(pkg.AverageComplexity)),
-			Color:      ca.GetComplexityColor(int(pkg.AverageComplexity)),
+	// Create file nodes (branches)
+	for fileName, fileFunctions := range fileMap {
+		// Calculate file complexity statistics
+		totalComplexity := 0
+		for _, fn := range fileFunctions {
+			totalComplexity += fn.Complexity
+		}
+		avgComplexity := float64(totalComplexity) / float64(len(fileFunctions))
+
+		fileNode := &TreeNode{
+			Name:       fileName,
+			NodeType:   "file",
+			Complexity: totalComplexity,
+			Level:      ca.GetComplexityLevel(int(avgComplexity)),
+			Color:      ca.GetComplexityColor(int(avgComplexity)),
 			Children:   []*TreeNode{},
 			Parent:     root,
 		}
 
-		// Create function nodes for this package
-		for _, fn := range pkg.Functions {
+		// Create function nodes (leaves) for this file
+		for _, fn := range fileFunctions {
 			functionNode := &TreeNode{
 				Name:       fn.Name,
 				NodeType:   "function",
@@ -226,12 +274,12 @@ func (ca *ComplexityAnalyzer) BuildComplexityTree(functions []FunctionComplexity
 				Level:      ca.GetComplexityLevel(fn.Complexity),
 				Color:      ca.GetComplexityColor(fn.Complexity),
 				Children:   []*TreeNode{},
-				Parent:     packageNode,
+				Parent:     fileNode,
 			}
-			packageNode.Children = append(packageNode.Children, functionNode)
+			fileNode.Children = append(fileNode.Children, functionNode)
 		}
 
-		root.Children = append(root.Children, packageNode)
+		root.Children = append(root.Children, fileNode)
 	}
 
 	return &ComplexityTree{Root: root}

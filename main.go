@@ -32,8 +32,8 @@ func main() {
 	// Create complexity analyzer
 	analyzer := NewComplexityAnalyzer(*lowThreshold, *midThreshold)
 
-	// Analyze the directory
-	functions, err := analyzer.AnalyzeDirectory(*targetDir)
+	// Analyze the directory (top-level files only)
+	functions, err := analyzer.AnalyzeTopDirectoryOnly(*targetDir)
 	if err != nil {
 		fmt.Printf("Error analyzing directory: %v\n", err)
 		return

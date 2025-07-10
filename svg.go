@@ -156,104 +156,463 @@ func (svg *SVGGenerator) drawNode(builder *strings.Builder, node *TreeNode, x, y
 	}
 }
 
-// drawNaturalTree draws a natural tree structure from bottom to top
+// drawNaturalTree draws a natural tree structure with hierarchical approach
 func (svg *SVGGenerator) drawNaturalTree(builder *strings.Builder) {
 	// Tree base parameters
-	trunkBaseX := float64(svg.Width) / 2
-	trunkBaseY := float64(svg.Height) - 50 // Start from bottom
+	rootX := float64(svg.Width) / 2
+	rootY := float64(svg.Height) - 50 // Start from bottom
+	
+	// Main trunk parameters
 	trunkHeight := 200.0
-	trunkWidth := 60.0
+	trunkWidth := 20.0
 	
-	// Draw main trunk
-	svg.drawNaturalTrunk(builder, trunkBaseX, trunkBaseY, trunkWidth, trunkHeight)
+	// Draw the main trunk
+	svg.drawMainTrunk(builder, rootX, rootY, trunkWidth, trunkHeight)
 	
-	// Calculate branch positions
-	branches := svg.calculateBranchPositions(trunkBaseX, trunkBaseY, trunkHeight)
+	// Step 1: Create branch-and-leaf combinations for each Node
+	svg.drawHierarchicalTree(builder, rootX, rootY-trunkHeight)
+}
+
+// drawHierarchicalTree draws a single trunk with all top directory functions as leaves
+func (svg *SVGGenerator) drawHierarchicalTree(builder *strings.Builder, trunkX, trunkTopY float64) {
+	if svg.tree.Root == nil || len(svg.tree.Root.Children) == 0 {
+		return
+	}
 	
-	// Draw branches and leaves
-	for i, branch := range branches {
-		svg.drawNaturalBranch(builder, branch, i)
+	// Collect all functions from all files in top directory
+	var allFunctions []*TreeNode
+	for _, fileNode := range svg.tree.Root.Children {
+		allFunctions = append(allFunctions, fileNode.Children...)
+	}
+	
+	// Draw all functions as leaves directly on the single trunk
+	svg.drawLeavesCluster(builder, trunkX, trunkTopY, allFunctions)
+}
+
+// drawFileBranch draws a branch for a file with its functions as leaves at the tip
+func (svg *SVGGenerator) drawFileBranch(builder *strings.Builder, trunkX, trunkTopY float64, index, totalFiles int, fileNode *TreeNode) {
+	// Calculate branch position and angle
+	heightOffset := 60.0 * float64(index) / float64(totalFiles) // Distribute along trunk
+	branchStartY := trunkTopY + heightOffset
+	
+	// Alternate branches left and right
+	var angle float64
+	var branchLength float64 = 100.0
+	
+	if index%2 == 0 {
+		// Left side branch
+		angle = 135.0 // 135 degrees (upward left)
+	} else {
+		// Right side branch  
+		angle = 45.0 // 45 degrees (upward right)
+	}
+	
+	// Calculate branch end position
+	angleRad := angle * math.Pi / 180
+	branchEndX := trunkX + branchLength*math.Cos(angleRad)
+	branchEndY := branchStartY - branchLength*math.Sin(angleRad)
+	
+	// Draw the file branch
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#8B4513" stroke-width="8.0"/>`,
+		trunkX, branchStartY, branchEndX, branchEndY))
+	builder.WriteString("\n")
+	
+	// Draw all functions as leaves clustered at the branch tip
+	functions := fileNode.Children
+	svg.drawLeavesCluster(builder, branchEndX, branchEndY, functions)
+}
+
+// drawTopDirectoryTree draws a tree with only top directory files
+func (svg *SVGGenerator) drawTopDirectoryTree(builder *strings.Builder, trunkX, trunkTopY float64, mainPackage *TreeNode) {
+	functions := mainPackage.Children
+	functionCount := len(functions)
+	
+	if functionCount == 0 {
+		return
+	}
+	
+	// Create a simple branching structure from the trunk top
+	// Each function gets its own small branch from the trunk tip area
+	
+	branchStartY := trunkTopY
+	branchLength := 40.0
+	
+	// Calculate positions around the trunk tip in a natural distribution
+	for i, functionNode := range functions {
+		// Create branches radiating from trunk tip in a circular pattern
+		angle := float64(i) * 360.0 / float64(functionCount)
+		
+		// Convert to radians
+		angleRad := angle * math.Pi / 180.0
+		
+		// Calculate branch end position
+		branchEndX := trunkX + branchLength*math.Cos(angleRad)
+		branchEndY := branchStartY + branchLength*math.Sin(angleRad)
+		
+		// Draw the small branch for this function
+		builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#8B4513" stroke-width="3.0"/>`,
+			trunkX, branchStartY, branchEndX, branchEndY))
+		builder.WriteString("\n")
+		
+		// Draw the leaf at the end of the branch
+		svg.drawNaturalLeaf(builder, branchEndX, branchEndY, functionNode)
 	}
 }
 
-// BranchInfo represents information about a branch
+// drawMainPackageBranch draws the main package as a short branch from trunk tip with leaves clustered at end
+func (svg *SVGGenerator) drawMainPackageBranch(builder *strings.Builder, trunkX, trunkTopY float64, packageNode *TreeNode) {
+	// Create a short upward branch from trunk tip
+	branchLength := 50.0
+	branchEndX := trunkX
+	branchEndY := trunkTopY - branchLength
+	
+	// Draw the main package branch (short vertical extension)
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#8B4513" stroke-width="6.0"/>`,
+		trunkX, trunkTopY, branchEndX, branchEndY))
+	builder.WriteString("\n")
+	
+	// Draw all functions as leaves clustered at the branch tip
+	functions := packageNode.Children
+	svg.drawLeavesCluster(builder, branchEndX, branchEndY, functions)
+}
+
+// drawSubPackageBranch draws a subdirectory package as a branch from trunk with leaves at tip
+func (svg *SVGGenerator) drawSubPackageBranch(builder *strings.Builder, trunkX, trunkTopY float64, index, totalPackages int, packageNode *TreeNode) {
+	// Calculate branch position and angle
+	heightOffset := 60.0 * float64(index) / float64(totalPackages) // Distribute along trunk
+	branchStartY := trunkTopY + heightOffset
+	
+	// Alternate branches left and right
+	var angle float64
+	var branchLength float64 = 80.0
+	
+	if index%2 == 0 {
+		// Left side branch
+		angle = 135.0 // 135 degrees (upward left)
+	} else {
+		// Right side branch  
+		angle = 45.0 // 45 degrees (upward right)
+	}
+	
+	// Calculate branch end position
+	angleRad := angle * math.Pi / 180
+	branchEndX := trunkX + branchLength*math.Cos(angleRad)
+	branchEndY := branchStartY - branchLength*math.Sin(angleRad)
+	
+	// Draw the package branch
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#8B4513" stroke-width="8.0"/>`,
+		trunkX, branchStartY, branchEndX, branchEndY))
+	builder.WriteString("\n")
+	
+	// Draw all functions as leaves clustered at the branch tip
+	functions := packageNode.Children
+	svg.drawLeavesCluster(builder, branchEndX, branchEndY, functions)
+}
+
+// drawLeavesCluster draws a cluster of function leaves naturally spreading from the branch tip
+func (svg *SVGGenerator) drawLeavesCluster(builder *strings.Builder, tipX, tipY float64, functions []*TreeNode) {
+	functionCount := len(functions)
+	if functionCount == 0 {
+		return
+	}
+	
+	// Create a natural spreading pattern from the branch tip
+	// Use different spreading patterns based on number of leaves
+	
+	if functionCount == 1 {
+		// Single leaf directly at tip
+		svg.drawNaturalLeaf(builder, tipX, tipY, functions[0])
+	} else if functionCount <= 3 {
+		// Small cluster - simple spread
+		for i, functionNode := range functions {
+			angle := float64(i) * 120.0 // 120 degrees apart
+			radius := 15.0 // Reduced from 20.0
+			
+			angleRad := angle * math.Pi / 180
+			leafX := tipX + radius*math.Cos(angleRad)
+			leafY := tipY + radius*math.Sin(angleRad)
+			
+			svg.drawNaturalLeaf(builder, leafX, leafY, functionNode)
+		}
+	} else {
+		// Larger cluster - natural spreading in organic pattern with tighter packing
+		for i, functionNode := range functions {
+			// Create organic spreading with varied distances - much tighter
+			baseRadius := 8.0 // Reduced from 18.0 for tighter clustering
+			radiusVariation := float64(i%6) * 6.0 // Vary radius naturally, more layers
+			radius := baseRadius + radiusVariation
+			
+			// Distribute around the tip with some randomness
+			angle := float64(i) * 360.0 / float64(functionCount)
+			angleVariation := (float64(i%5) - 2) * 10.0 // Reduced variation for more uniform distribution
+			angle += angleVariation
+			
+			angleRad := angle * math.Pi / 180
+			leafX := tipX + radius*math.Cos(angleRad)
+			leafY := tipY + radius*math.Sin(angleRad)
+			
+			svg.drawNaturalLeaf(builder, leafX, leafY, functionNode)
+		}
+	}
+}
+
+// BranchInfo represents information about a branch in the new unified system
 type BranchInfo struct {
 	StartX, StartY float64
 	EndX, EndY     float64
 	Angle          float64
-	PackageNode    *TreeNode
-	Functions      []*TreeNode
+	Length         float64
+	Thickness      float64
+	Node           *TreeNode    // The node this branch represents
+	SubBranches    []BranchInfo // Child branches
+	IsLeafBranch   bool         // True if this branch should have leaves
 }
 
-// calculateBranchPositions calculates positions for branches based on packages
-func (svg *SVGGenerator) calculateBranchPositions(trunkX, trunkBaseY, trunkHeight float64) []BranchInfo {
+// createSubdirectoryBranches creates branches for subdirectories only (excluding main package)
+func (svg *SVGGenerator) createSubdirectoryBranches(trunkX, trunkTopY float64) []BranchInfo {
 	var branches []BranchInfo
 	
 	if svg.tree.Root == nil || len(svg.tree.Root.Children) == 0 {
 		return branches
 	}
 	
-	packages := svg.tree.Root.Children
-	packageCount := len(packages)
+	// Filter out the main package - only create branches for subdirectories
+	var subPackages []*TreeNode
+	for _, packageNode := range svg.tree.Root.Children {
+		if packageNode.Name != "main" || packageNode.NodeType != "package" {
+			subPackages = append(subPackages, packageNode)
+		}
+	}
 	
-	// Calculate branch positions along the trunk
-	for i, packageNode := range packages {
-		// Branch height on trunk (distribute more evenly)
-		branchHeight := trunkBaseY - (trunkHeight * (float64(i+1) / float64(packageCount+1)))
+	packageCount := len(subPackages)
+	if packageCount == 0 {
+		return branches
+	}
+	
+	// Distribute branches along the trunk from top to bottom
+	for i, packageNode := range subPackages {
+		// Calculate branch position along the trunk
+		heightRatio := 1.0 - float64(i)/float64(packageCount) // Start from top
+		branchY := trunkTopY + 60.0*heightRatio // Space for branch distribution
 		
-		// Branch angle (alternate left and right, upward growth)
+		// Alternate branches left and right from the trunk
 		var angle float64
-		var branchSide string
-		
 		if i%2 == 0 {
-			// Left side branches: upward angles from 160° to 130° (top-left quadrant)
-			baseAngle := 160.0
-			variation := float64(i/2) * 6.0
-			angle = baseAngle - variation
-			branchSide = "left"
+			// Left side branches: upward angles from 135° to 165°
+			angle = 135.0 + float64(i/2)*5.0
 		} else {
-			// Right side branches: upward angles from 20° to 50° (top-right quadrant)
-			baseAngle := 20.0
-			variation := float64(i/2) * 6.0
-			angle = baseAngle + variation
-			branchSide = "right"
+			// Right side branches: upward angles from 45° to 15°
+			angle = 45.0 - float64(i/2)*5.0
 		}
 		
-		// Branch length (limited to reasonable size)
-		baseBranchLength := 60.0 + float64(len(packageNode.Children))*8
-		// Add some variation to make it more natural
-		var branchLength float64
-		if branchSide == "left" {
-			branchLength = baseBranchLength + float64(i%3)*10
-		} else {
-			branchLength = baseBranchLength + float64((i+1)%3)*10
-		}
-		
-		// Limit branch length to prevent going off screen
-		if branchLength > 120.0 {
-			branchLength = 120.0
-		}
-		
-		// Calculate branch end position
-		angleRad := angle * math.Pi / 180
-		endX := trunkX + branchLength*math.Cos(angleRad)
-		// For upward branches, we want negative Y (SVG coordinates)
-		endY := branchHeight - branchLength*math.Sin(angleRad)
-		
-		branch := BranchInfo{
-			StartX:      trunkX,
-			StartY:      branchHeight,
-			EndX:        endX,
-			EndY:        endY,
-			Angle:       angle,
-			PackageNode: packageNode,
-			Functions:   packageNode.Children,
-		}
-		
+		// Create branch for subdirectory package
+		branch := svg.createPackageBranch(trunkX, branchY, angle, packageNode)
 		branches = append(branches, branch)
 	}
 	
 	return branches
+}
+
+// createBranchSystem creates a unified branch system for the entire tree (deprecated)
+func (svg *SVGGenerator) createBranchSystem(trunkX, trunkTopY float64) []BranchInfo {
+	// This function is deprecated - use createSubdirectoryBranches for new trunk/branch design
+	return svg.createSubdirectoryBranches(trunkX, trunkTopY)
+}
+
+// createPackageBranch creates a branch for a package with functions clustered at tip
+func (svg *SVGGenerator) createPackageBranch(startX, startY, angle float64, packageNode *TreeNode) BranchInfo {
+	// Main branch length based on complexity
+	baseLength := 80.0 + float64(len(packageNode.Children))*8.0
+	if baseLength > 120.0 {
+		baseLength = 120.0
+	}
+	
+	// Calculate end position
+	angleRad := angle * math.Pi / 180
+	endX := startX + baseLength*math.Cos(angleRad)
+	endY := startY - baseLength*math.Sin(angleRad)
+	
+	// Create main branch with all functions as direct leaves at tip
+	mainBranch := BranchInfo{
+		StartX:      startX,
+		StartY:      startY,
+		EndX:        endX,
+		EndY:        endY,
+		Angle:       angle,
+		Length:      baseLength,
+		Thickness:   8.0,
+		Node:        packageNode,
+		SubBranches: []BranchInfo{},
+		IsLeafBranch: true, // This branch will have clustered leaves at tip
+	}
+	
+	return mainBranch
+}
+
+// createFunctionBranch creates a leaf-bearing branch for a function
+func (svg *SVGGenerator) createFunctionBranch(startX, startY, angle float64, functionNode *TreeNode) BranchInfo {
+	// Function branch length (shorter than main branches)
+	length := 30.0 + float64(functionNode.Complexity)*2.0
+	if length > 50.0 {
+		length = 50.0
+	}
+	
+	// Calculate end position
+	angleRad := angle * math.Pi / 180
+	endX := startX + length*math.Cos(angleRad)
+	endY := startY - length*math.Sin(angleRad)
+	
+	return BranchInfo{
+		StartX:      startX,
+		StartY:      startY,
+		EndX:        endX,
+		EndY:        endY,
+		Angle:       angle,
+		Length:      length,
+		Thickness:   3.0,
+		Node:        functionNode,
+		SubBranches: []BranchInfo{},
+		IsLeafBranch: true,
+	}
+}
+
+// drawBranchSystem draws the entire unified branch system
+func (svg *SVGGenerator) drawBranchSystem(builder *strings.Builder, branches []BranchInfo) {
+	for _, branch := range branches {
+		svg.drawBranchRecursive(builder, branch)
+	}
+}
+
+// drawBranchRecursive recursively draws a branch and its sub-branches
+func (svg *SVGGenerator) drawBranchRecursive(builder *strings.Builder, branch BranchInfo) {
+	// Draw the branch line
+	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#8B4513" stroke-width="%.1f"/>`,
+		branch.StartX, branch.StartY, branch.EndX, branch.EndY, branch.Thickness))
+	builder.WriteString("\n")
+	
+	// If this is a leaf branch, draw leaves at the tip
+	if branch.IsLeafBranch {
+		svg.drawLeavesAtTip(builder, branch)
+	}
+	
+	// Draw sub-branches
+	for _, subBranch := range branch.SubBranches {
+		svg.drawBranchRecursive(builder, subBranch)
+	}
+}
+
+// drawLeavesAtTip draws leaves concentrated at the branch tip
+func (svg *SVGGenerator) drawLeavesAtTip(builder *strings.Builder, branch BranchInfo) {
+	// For package branches, draw all functions as leaves clustered at tip
+	if branch.IsLeafBranch && branch.Node.NodeType == "package" {
+		functions := branch.Node.Children
+		functionCount := len(functions)
+		
+		if functionCount == 0 {
+			return
+		}
+		
+		// Create circular distribution of leaves around the branch tip
+		for i, functionNode := range functions {
+			// Calculate position in circle around tip
+			radius := 15.0 + float64(i%3)*8.0 // Vary radius for natural look
+			angle := float64(i) * 2 * math.Pi / float64(functionCount)
+			
+			// Add some randomness for natural distribution
+			angleOffset := (float64(i%5) - 2) * 0.3
+			angle += angleOffset
+			
+			leafX := branch.EndX + radius*math.Cos(angle)
+			leafY := branch.EndY + radius*math.Sin(angle)
+			
+			// Draw the leaf for this function
+			svg.drawNaturalLeaf(builder, leafX, leafY, functionNode)
+		}
+	}
+}
+
+// calculateBranchPositions is deprecated - use createBranchSystem instead
+func (svg *SVGGenerator) calculateBranchPositions(trunkX, trunkBaseY, trunkHeight float64) []BranchInfo {
+	// This function is no longer used in the unified branch system
+	// All branch creation is now handled by createBranchSystem
+	return []BranchInfo{}
+}
+
+// drawTrunkLeaves draws leaves for top directory functions clustered at trunk tip
+func (svg *SVGGenerator) drawTrunkLeaves(builder *strings.Builder, trunkX, trunkBaseY, trunkHeight float64) {
+	if svg.tree.Root == nil {
+		return
+	}
+	
+	// Find the main package (top directory functions)
+	var mainPackage *TreeNode
+	for _, packageNode := range svg.tree.Root.Children {
+		if packageNode.Name == "main" && packageNode.NodeType == "package" {
+			mainPackage = packageNode
+			break
+		}
+	}
+	
+	if mainPackage == nil || len(mainPackage.Children) == 0 {
+		return
+	}
+	
+	// Calculate trunk tip position - this is the actual top of the trunk
+	trunkTipX := trunkX
+	trunkTipY := trunkBaseY - trunkHeight
+	
+	// Draw leaves clustered tightly at the very tip of the trunk
+	functions := mainPackage.Children
+	functionCount := len(functions)
+	
+	// Use smaller radius and position leaves closer to the tip
+	baseRadius := 20.0
+	
+	for i, functionNode := range functions {
+		// Create concentric circles for clustering at tip
+		layer := i / 6 // 6 leaves per layer
+		radius := baseRadius + float64(layer)*12.0
+		
+		// Distribute leaves in each layer
+		leavesInLayer := 6
+		if layer == 0 && functionCount < 6 {
+			leavesInLayer = functionCount
+		}
+		layerIndex := i % leavesInLayer
+		
+		angle := float64(layerIndex) * 2 * math.Pi / float64(leavesInLayer)
+		
+		// Add slight variation for natural look
+		angleOffset := (float64(i%3) - 1) * 0.2
+		angle += angleOffset
+		
+		// Position leaves just above the trunk tip
+		leafX := trunkTipX + radius*math.Cos(angle)
+		leafY := trunkTipY - 10.0 + radius*math.Sin(angle) // Move up 10 pixels from tip
+		
+		// Draw the leaf for this function
+		svg.drawNaturalLeaf(builder, leafX, leafY, functionNode)
+	}
+}
+
+// drawMainTrunk draws the main vertical trunk representing the top directory
+func (svg *SVGGenerator) drawMainTrunk(builder *strings.Builder, baseX, baseY, width, height float64) {
+	// Draw trunk as a tapered rectangle (wider at bottom)
+	topWidth := width * 0.6
+	
+	// Create path for tapered trunk
+	path := fmt.Sprintf(`M %.1f,%.1f L %.1f,%.1f L %.1f,%.1f L %.1f,%.1f Z`,
+		baseX-width/2, baseY,           // Bottom left
+		baseX+width/2, baseY,           // Bottom right
+		baseX+topWidth/2, baseY-height, // Top right
+		baseX-topWidth/2, baseY-height) // Top left
+	
+	// Draw main trunk
+	builder.WriteString(fmt.Sprintf(`<path d="%s" fill="#8B4513" stroke="#654321" stroke-width="2"/>`, path))
+	builder.WriteString("\n")
+	
+	// Add realistic bark texture and wood grain
+	svg.drawTrunkTexture(builder, baseX, baseY, width, height, topWidth)
 }
 
 // drawNaturalTrunk draws the main trunk of the tree
@@ -359,45 +718,8 @@ func (svg *SVGGenerator) addBarkDetails(builder *strings.Builder, baseX, baseY, 
 	}
 }
 
-// drawNaturalBranch draws a branch with its leaves
-func (svg *SVGGenerator) drawNaturalBranch(builder *strings.Builder, branch BranchInfo, index int) {
-	// Draw branch line
-	builder.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#8B4513" stroke-width="%.1f"/>`,
-		branch.StartX, branch.StartY, branch.EndX, branch.EndY, math.Max(8.0-float64(index)*0.5, 3.0)))
-	builder.WriteString("\n")
-	
-	// Draw leaves along the branch
-	if len(branch.Functions) > 0 {
-		svg.drawLeavesOnBranch(builder, branch)
-	}
-}
-
-// drawLeavesOnBranch draws leaves clustered at branch tip in a circular pattern
-func (svg *SVGGenerator) drawLeavesOnBranch(builder *strings.Builder, branch BranchInfo) {
-	functionCount := len(branch.Functions)
-	
-	// Cluster leaves at the end of the branch (70-100% along the branch)
-	for i, functionNode := range branch.Functions {
-		// Position leaves near the branch tip
-		t := 0.7 + float64(i)*0.3/float64(functionCount) // 0.7 to 1.0
-		baseX := branch.StartX + (branch.EndX-branch.StartX)*t
-		baseY := branch.StartY + (branch.EndY-branch.StartY)*t
-		
-		// Create circular distribution around the branch tip
-		radius := 8.0 + float64(i)*3.0 // Smaller radius, closer to branch
-		angle := float64(i) * 2 * math.Pi / float64(functionCount)
-		
-		// Add some randomness to angle for natural variation
-		angleOffset := (float64(i%5) - 2) * 0.2 // -0.4 to 0.4 radians
-		angle += angleOffset
-		
-		leafX := baseX + radius*math.Cos(angle)
-		leafY := baseY + radius*math.Sin(angle)
-		
-		// Draw leaf based on complexity
-		svg.drawNaturalLeaf(builder, leafX, leafY, functionNode)
-	}
-}
+// drawNaturalBranch and drawLeavesOnBranch are deprecated in unified branch system
+// These functions are replaced by drawBranchRecursive and drawLeavesAtTip
 
 // drawNaturalLeaf draws a single leaf in natural style
 func (svg *SVGGenerator) drawNaturalLeaf(builder *strings.Builder, x, y float64, functionNode *TreeNode) {
