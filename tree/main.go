@@ -91,10 +91,10 @@ func generateTreeSVG(width, height int, colorRatio ColorRatio) string {
 	svg.WriteString(`</defs>`)
 	
 	// Background
-	svg.WriteString(fmt.Sprintf(`<rect width="%d" height="%d" fill="#87ceeb"/>`, width, height))
+	svg.WriteString(fmt.Sprintf(`<rect width="%d" height="%d" fill="#e1f5fe"/>`, width, height))
 	
-	// Ground
-	svg.WriteString(fmt.Sprintf(`<rect x="0" y="%d" width="%d" height="50" fill="#90ee90"/>`, height-50, width))
+	// Simple flat green ground
+	svg.WriteString(fmt.Sprintf(`<rect x="0" y="%d" width="%d" height="50" fill="#4caf50"/>`, height-50, width))
 	
 	
 	// Trunk
