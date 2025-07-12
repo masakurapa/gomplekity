@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"math"
 	"math/rand"
@@ -19,24 +20,57 @@ type ColorRatio struct {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	
-	// Default autumn colors ratio
-	colorRatio := ColorRatio{
-		Green:  0.4, // 40% green
-		Yellow: 0.3, // 30% yellow
-		Red:    0.2, // 20% red
-		Brown:  0.1, // 10% brown (dried leaves)
+	// Command line flags
+	var (
+		green    = flag.Float64("green", 0.4, "Green leaves ratio (0.0-1.0)")
+		yellow   = flag.Float64("yellow", 0.3, "Yellow leaves ratio (0.0-1.0)")
+		red      = flag.Float64("red", 0.2, "Red leaves ratio (0.0-1.0)")
+		brown    = flag.Float64("brown", 0.1, "Brown leaves ratio (0.0-1.0)")
+		output   = flag.String("output", "tree.svg", "Output SVG filename")
+		help     = flag.Bool("help", false, "Show usage help")
+	)
+	flag.Parse()
+	
+	if *help {
+		fmt.Println("Tree SVG Generator")
+		fmt.Println("Usage:")
+		fmt.Println("  go run main.go [options]")
+		fmt.Println("\nOptions:")
+		flag.PrintDefaults()
+		fmt.Println("\nExample:")
+		fmt.Println("  go run main.go -green=0.5 -yellow=0.2 -red=0.2 -brown=0.1 -output=autumn_tree.svg")
+		return
 	}
+	
+	// Validate and normalize ratios
+	total := *green + *yellow + *red + *brown
+	if total <= 0 {
+		fmt.Println("Error: Total color ratio must be greater than 0")
+		os.Exit(1)
+	}
+	
+	// Normalize ratios to sum to 1.0
+	colorRatio := ColorRatio{
+		Green:  *green / total,
+		Yellow: *yellow / total,
+		Red:    *red / total,
+		Brown:  *brown / total,
+	}
+	
+	fmt.Printf("Color ratios: Green=%.1f%%, Yellow=%.1f%%, Red=%.1f%%, Brown=%.1f%%\n",
+		colorRatio.Green*100, colorRatio.Yellow*100, colorRatio.Red*100, colorRatio.Brown*100)
 	
 	svg := generateTreeSVG(800, 600, colorRatio)
 	
-	file, err := os.Create("tree.svg")
+	file, err := os.Create(*output)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Error creating file: %v\n", err)
+		os.Exit(1)
 	}
 	defer file.Close()
 	
 	file.WriteString(svg)
-	fmt.Println("Tree SVG generated: tree.svg")
+	fmt.Printf("Tree SVG generated: %s\n", *output)
 }
 
 func generateTreeSVG(width, height int, colorRatio ColorRatio) string {
