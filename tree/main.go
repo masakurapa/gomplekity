@@ -245,7 +245,7 @@ func generateTreeSVG(width, height int, colorRatio ColorRatio) string {
 	
 	// Foliage area settings
 	foliageCenterX := trunkCenterX
-	foliageCenterY := trunkTopY - 80
+	foliageCenterY := trunkTopY - 40  // Move foliage down to cover trunk top
 	foliageRadius := 150.0
 	
 	
