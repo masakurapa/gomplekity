@@ -17,11 +17,11 @@ func PrintComplexityReport(functions []complexity.FunctionComplexity, analyzer *
 
 	// Calculate package statistics
 	packages := calculatePackageComplexity(functions)
-	
+
 	fmt.Printf("📦 Package Statistics:\n")
 	for packageName, pkg := range packages {
 		fmt.Printf("  %s: avg=%.1f, max=%d, min=%d, total=%d (%d functions)\n",
-			packageName, pkg.AverageComplexity, pkg.MaxComplexity, pkg.MinComplexity, 
+			packageName, pkg.AverageComplexity, pkg.MaxComplexity, pkg.MinComplexity,
 			pkg.TotalComplexity, len(pkg.Functions))
 	}
 	fmt.Printf("\n🔍 Function Details:\n")
@@ -72,7 +72,7 @@ type PackageComplexity struct {
 // calculatePackageComplexity calculates package-level complexity statistics
 func calculatePackageComplexity(functions []complexity.FunctionComplexity) map[string]PackageComplexity {
 	packageMap := make(map[string][]complexity.FunctionComplexity)
-	
+
 	// Group functions by package (extracted from file path)
 	for _, fn := range functions {
 		// Extract package name from file path
@@ -80,21 +80,21 @@ func calculatePackageComplexity(functions []complexity.FunctionComplexity) map[s
 		if packageName == "." {
 			packageName = "main"
 		}
-		
+
 		packageMap[packageName] = append(packageMap[packageName], fn)
 	}
-	
+
 	packages := make(map[string]PackageComplexity)
-	
+
 	for packageName, packageFunctions := range packageMap {
 		if len(packageFunctions) == 0 {
 			continue
 		}
-		
+
 		total := 0
 		min := packageFunctions[0].Complexity
 		max := packageFunctions[0].Complexity
-		
+
 		for _, fn := range packageFunctions {
 			total += fn.Complexity
 			if fn.Complexity < min {
@@ -104,9 +104,9 @@ func calculatePackageComplexity(functions []complexity.FunctionComplexity) map[s
 				max = fn.Complexity
 			}
 		}
-		
+
 		average := float64(total) / float64(len(packageFunctions))
-		
+
 		packages[packageName] = PackageComplexity{
 			PackageName:       packageName,
 			Functions:         packageFunctions,
@@ -116,7 +116,7 @@ func calculatePackageComplexity(functions []complexity.FunctionComplexity) map[s
 			MinComplexity:     min,
 		}
 	}
-	
+
 	return packages
 }
 
@@ -125,12 +125,13 @@ func PrintTree(tree *complexity.ComplexityTree) {
 	fmt.Printf("🌳 Complexity Tree Structure\n")
 	fmt.Printf("=============================\n")
 	printNode(tree.Root, 0)
+	fmt.Println()
 }
 
 // printNode recursively prints tree nodes with indentation
 func printNode(node *complexity.TreeNode, depth int) {
 	indent := strings.Repeat("  ", depth)
-	
+
 	var emoji string
 	switch node.Level {
 	case "low":
@@ -144,14 +145,14 @@ func printNode(node *complexity.TreeNode, depth int) {
 	default:
 		emoji = "⚪"
 	}
-	
+
 	complexityInfo := ""
 	if node.NodeType != "root" {
 		complexityInfo = fmt.Sprintf(" (complexity: %d)", node.Complexity)
 	}
-	
+
 	fmt.Printf("%s%s %s [%s]%s\n", indent, emoji, node.Name, node.NodeType, complexityInfo)
-	
+
 	for _, child := range node.Children {
 		printNode(child, depth+1)
 	}

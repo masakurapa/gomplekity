@@ -148,7 +148,6 @@ func generateTreeVisualization(functions []complexity.FunctionComplexity, analyz
 		return
 	}
 
-	fmt.Println()
 	fmt.Printf("✅ Tree visualization saved to: %s\n", filename)
 	fmt.Printf("📊 Color distribution: 🟢%.1f%% 🟡%.1f%% 🔴%.1f%% 🟤%.1f%%\n",
 		green*100, yellow*100, red*100, brown*100)
