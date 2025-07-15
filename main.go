@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	
+	"github.com/masakurapa/gomplekity/internal/complexity"
 )
 
 func main() {
@@ -30,7 +32,7 @@ func main() {
 	}
 
 	// Create complexity analyzer
-	analyzer := NewComplexityAnalyzer(*lowThreshold, *midThreshold)
+	analyzer := complexity.NewComplexityAnalyzer(*lowThreshold, *midThreshold)
 
 	// Analyze the directory (top-level files only)
 	functions, err := analyzer.AnalyzeTopDirectoryOnly(*targetDir)
@@ -52,19 +54,7 @@ func main() {
 	
 	switch *outputFormat {
 	case "svg":
-		outputFileName := *outputFile
-		if outputFileName == "" {
-			outputFileName = "complexity.svg"
-		}
-		
-		svgGenerator := NewSVGGenerator(tree)
-		err := svgGenerator.SaveSVG(outputFileName)
-		if err != nil {
-			fmt.Printf("Error generating SVG: %v\n", err)
-			return
-		}
-		
-		fmt.Printf("✅ SVG visualization saved to: %s\n", outputFileName)
+		fmt.Println("🔧 SVG output coming soon...")
 		
 	case "html":
 		fmt.Println("🔧 HTML output coming soon...")
