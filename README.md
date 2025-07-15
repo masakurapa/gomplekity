@@ -78,3 +78,7 @@ gomplekity -dir ./src -output project.svg -medium 8 -high 12 -critical 16 -verbo
 - **木 (ki)** - Japanese word for "tree"
 
 But it might help you understand your code complexity in a fun way! 🌳✨
+
+## License
+
+This project uses [github.com/fzipp/gocyclo](https://github.com/fzipp/gocyclo) which is licensed under BSD-3-Clause.
