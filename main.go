@@ -47,12 +47,12 @@ func main() {
 
 	// Print complexity report only if verbose
 	if *verbose {
-		analyzer.PrintComplexityReport(functions)
+		PrintComplexityReport(functions, analyzer, *mediumThreshold, *highThreshold, *criticalThreshold)
 
 		// Build and display tree structure
 		complexityTree := analyzer.BuildComplexityTree(functions)
 		fmt.Printf("\n")
-		complexityTree.PrintTree()
+		PrintTree(complexityTree)
 	}
 
 	// Generate tree visualization based on complexity
