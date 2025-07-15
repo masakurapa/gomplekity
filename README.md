@@ -1,17 +1,78 @@
-# Gomplekity
+# 🌳 Gomplekity
 
-This tool analyzes and visualizes the cyclomatic complexity of Go repositories using tree-based visualization.
-It helps developers understand the complexity structure of their codebase through intuitive tree representations.
+## Overview
 
-このツールは、Goリポジトリの循環的複雑度を「木」でビジュアライズ化して出力するためのツールです。
-直感的な木の表現を通じて、開発者がコードベースの複雑度構造を理解できるよう支援します。
+Gomplekity analyzes the cyclomatic complexity of your Go code and generates a beautiful tree visualization. The leaf colors represent different complexity levels:
 
-The name "gomplekity" is a compound word combining:
+**Not a serious tool.** A simple Go complexity visualizer that turns your code complexity into a tree with colored leaves.
+
+![Example Tree](example.svg)
+
+- 🟢 **Green**: Low complexity (0-9)
+- 🟡 **Yellow**: Medium complexity (10-14)
+- 🟡 **Red**: High complexity (15-19)
+- 🟤 **Brown**: Critical complexity (20+)
+
+## Installation
+
+```bash
+go install github.com/your-username/gomplekity@latest
+```
+
+## Usage
+
+### Basic usage
+
+```bash
+# Analyze current directory
+gomplekity
+
+# Analyze specific directory
+gomplekity -dir ./src
+
+# Custom output file
+gomplekity -output my_project.svg
+```
+
+### Advanced options
+
+```bash
+# Show detailed analysis
+gomplekity -verbose
+
+# Custom complexity thresholds
+gomplekity -medium 8 -high 12 -critical 16
+
+# All options
+gomplekity -dir ./src -output project.svg -medium 8 -high 12 -critical 16 -verbose
+```
+
+### Options
+
+```
+-dir string         Directory to analyze (default ".")
+-output string      Output file path (default "complexity_tree.svg")
+-medium int         Medium complexity threshold (default 10)
+-high int           High complexity threshold (default 15)
+-critical int       Critical complexity threshold (default 20)
+-verbose            Show detailed complexity analysis
+-help               Show help message
+```
+
+### Sample output
+
+```
+✅ Tree visualization saved to: complexity_tree.svg
+📊 Color distribution: 🟢76.9% 🟡15.4% 🔴7.7% 🟤0.0%
+```
+
+---
+
+## Name Origin
+
+"Gomplekity" combines:
 - **Go** - The Go programming language
-- **Complexity** - Referring to computational or algorithmic complexity
-- **木 (ki)** - The Japanese word for "tree"
+- **Complexity** - Code complexity
+- **木 (ki)** - Japanese word for "tree"
 
-「gomplekity」という名前は以下の組み合わせです：
-- **Go** - Go プログラミング言語
-- **Complexity** - 計算量や アルゴリズムの複雑度
-- **木 (ki)** - 日本語で「木」を意味する
+But it might help you understand your code complexity in a fun way! 🌳✨
