@@ -18,7 +18,7 @@ The leaf colors represent different complexity levels, and the color distributio
 ## Installation
 
 ```bash
-go install github.com/your-username/gomplekity@latest
+go install github.com/masakurapa/gomplekity@latest
 ```
 
 ## Usage
