@@ -18,19 +18,19 @@ func addGroundAndGrass(svg *strings.Builder, width, height int) {
 	svg.WriteString(`</defs>`)
 	
 	// Base ground with depth gradient
-	svg.WriteString(fmt.Sprintf(`<rect x="0" y="%d" width="%d" height="50" fill="url(#groundDepth)"/>`, height-50, width))
+	svg.WriteString(fmt.Sprintf(`<rect x="0" y="%d" width="%d" height="30" fill="url(#groundDepth)"/>`, height-30, width))
 	
 	// Add subtle grass texture patterns on the base
 	grassPatternColors := []string{"#43a047", "#388e3c", "#2e7d32", "#66bb6a"}
 	
 	// Create dense grass texture covering 90% of ground
-	groundArea := float64(width * 50) // Total ground area
+	groundArea := float64(width * 30) // Total ground area
 	grassCoverage := groundArea * 0.9 // 90% coverage
 	grassPatches := int(grassCoverage / 40) // Each patch covers ~40 pixels
 	
 	for i := 0; i < grassPatches; i++ {
 		patchX := rand.Float64() * float64(width)
-		patchY := float64(height-50) + rand.Float64()*50
+		patchY := float64(height-30) + rand.Float64()*30
 		
 		// Create dense grass tuft
 		tufts := 5 + rand.Intn(8) // More grass per patch
@@ -53,7 +53,7 @@ func addGroundAndGrass(svg *strings.Builder, width, height int) {
 	// Add even more fine grass details for density
 	for i := 0; i < int(float64(grassPatches)*0.5); i++ {
 		x := rand.Float64() * float64(width)
-		y := float64(height-50) + rand.Float64()*50
+		y := float64(height-30) + rand.Float64()*30
 		
 		// Very short grass for base texture
 		microGrassHeight := 1 + rand.Float64()*2
@@ -72,7 +72,7 @@ func addGroundAndGrass(svg *strings.Builder, width, height int) {
 	
 	for i := 0; i < 15; i++ {
 		leafX := rand.Float64() * float64(width)
-		leafY := float64(height-45) + rand.Float64()*40
+		leafY := float64(height-25) + rand.Float64()*25
 		leafSize := 8 + rand.Float64()*12
 		leafRotation := rand.Float64() * 360
 		leafColor := fallenLeafColors[rand.Intn(len(fallenLeafColors))]
@@ -99,7 +99,7 @@ func addWindBlownGrass(svg *strings.Builder, width, height int) {
 		
 		// Create curved grass blade using quadratic curve
 		startX := x
-		startY := float64(height - 50)
+		startY := float64(height - 30)
 		controlX := x + bendAmount*0.6
 		controlY := startY - grassHeight*0.7
 		endX := x + bendAmount
@@ -124,7 +124,7 @@ func addWindBlownGrass(svg *strings.Builder, width, height int) {
 			windBend := grassHeight * (0.2 + rand.Float64()*0.3)
 			
 			startX := x
-			startY := float64(height - 50)
+			startY := float64(height - 30)
 			endX := x + windBend
 			endY := startY - grassHeight
 			

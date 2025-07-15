@@ -30,7 +30,7 @@ func Generate(green, yellow, red, brown float64) *strings.Builder {
 		Brown:  brown / total,
 	}
 
-	return generateTreeSVG(800, 600, colorRatio)
+	return generateTreeSVG(500, 400, colorRatio)
 }
 
 func generateTreeSVG(width, height int, colorRatio ColorRatio) *strings.Builder {
@@ -56,9 +56,9 @@ func generateTreeSVG(width, height int, colorRatio ColorRatio) *strings.Builder 
 
 	// Trunk
 	trunkCenterX := float64(width) / 2
-	trunkBottomY := float64(height - 50)
-	trunkTopY := float64(height - 200)
-	trunkWidth := 60.0
+	trunkBottomY := float64(height - 30)
+	trunkTopY := float64(height - 150)
+	trunkWidth := 40.0
 
 	// Trunk shape (slightly tapered)
 	svg.WriteString(fmt.Sprintf(`<path d="M %.1f %.1f Q %.1f %.1f %.1f %.1f L %.1f %.1f Q %.1f %.1f %.1f %.1f Z" fill="url(#trunkGrad)"/>`,
@@ -71,8 +71,8 @@ func generateTreeSVG(width, height int, colorRatio ColorRatio) *strings.Builder 
 
 	// Foliage area settings
 	foliageCenterX := trunkCenterX
-	foliageCenterY := trunkTopY - 40 // Move foliage down to cover trunk top
-	foliageRadius := 150.0
+	foliageCenterY := trunkTopY - 30 // Move foliage down to cover trunk top
+	foliageRadius := 120.0
 
 	// Add individual leaves to fill the entire foliage area
 	addFoliage(&svg, foliageCenterX, foliageCenterY, foliageRadius, colorRatio)

@@ -2,7 +2,9 @@
 
 ## Overview
 
-Gomplekity analyzes the cyclomatic complexity of your Go code and generates a beautiful tree visualization. The leaf colors represent different complexity levels:
+Gomplekity analyzes the cyclomatic complexity of your Go code and generates a beautiful tree visualization.
+
+The leaf colors represent different complexity levels, and the color distribution reflects the proportion of functions at each complexity level.
 
 **Not a serious tool.** A simple Go complexity visualizer that turns your code complexity into a tree with colored leaves.
 
