@@ -35,8 +35,8 @@ type TreeNode struct {
 	Name       string
 	NodeType   string // "root", "package", "function", "file"
 	Complexity int
-	Level      string // "low", "medium", "high"
-	Color      string // "green", "yellow", "red"
+	Level      string // "low", "medium", "high", "critical"
+	Color      string // "green", "yellow", "red", "brown"
 	Children   []*TreeNode
 	Parent     *TreeNode
 }
@@ -48,15 +48,17 @@ type ComplexityTree struct {
 
 // ComplexityAnalyzer analyzes the cyclomatic complexity of Go files
 type ComplexityAnalyzer struct {
-	lowThreshold    int
-	mediumThreshold int
+	mediumThreshold   int
+	highThreshold     int
+	criticalThreshold int
 }
 
 // NewComplexityAnalyzer creates a new complexity analyzer
-func NewComplexityAnalyzer(lowThreshold, mediumThreshold int) *ComplexityAnalyzer {
+func NewComplexityAnalyzer(mediumThreshold, highThreshold, criticalThreshold int) *ComplexityAnalyzer {
 	return &ComplexityAnalyzer{
-		lowThreshold:    lowThreshold,
-		mediumThreshold: mediumThreshold,
+		mediumThreshold:   mediumThreshold,
+		highThreshold:     highThreshold,
+		criticalThreshold: criticalThreshold,
 	}
 }
 
@@ -155,12 +157,14 @@ func (ca *ComplexityAnalyzer) analyzeFile(filename string) ([]FunctionComplexity
 
 // GetComplexityLevel returns the complexity level based on thresholds
 func (ca *ComplexityAnalyzer) GetComplexityLevel(complexity int) string {
-	if complexity <= ca.lowThreshold {
+	if complexity < ca.mediumThreshold {
 		return "low"
-	} else if complexity <= ca.mediumThreshold {
+	} else if complexity < ca.highThreshold {
 		return "medium"
+	} else if complexity < ca.criticalThreshold {
+		return "high"
 	}
-	return "high"
+	return "critical"
 }
 
 // GetComplexityColor returns the color for the complexity level
@@ -172,6 +176,8 @@ func (ca *ComplexityAnalyzer) GetComplexityColor(complexity int) string {
 		return "yellow"
 	case "high":
 		return "red"
+	case "critical":
+		return "brown"
 	default:
 		return "gray"
 	}
@@ -304,6 +310,8 @@ func (tree *ComplexityTree) printNode(node *TreeNode, depth int) {
 		emoji = "🟡"
 	case "high":
 		emoji = "🔴"
+	case "critical":
+		emoji = "🟤"
 	default:
 		emoji = "⚪"
 	}
@@ -324,8 +332,8 @@ func (tree *ComplexityTree) printNode(node *TreeNode, depth int) {
 func (ca *ComplexityAnalyzer) PrintComplexityReport(functions []FunctionComplexity) {
 	fmt.Printf("🌳 Complexity Analysis Report\n")
 	fmt.Printf("================================\n")
-	fmt.Printf("Thresholds: Low ≤ %d, Medium ≤ %d, High > %d\n\n",
-		ca.lowThreshold, ca.mediumThreshold, ca.mediumThreshold)
+	fmt.Printf("Thresholds: Low < %d, Medium ≥ %d, High ≥ %d, Critical ≥ %d\n\n",
+		ca.mediumThreshold, ca.mediumThreshold, ca.highThreshold, ca.criticalThreshold)
 
 	// Calculate package statistics
 	packages := ca.CalculatePackageComplexity(functions)
@@ -338,7 +346,7 @@ func (ca *ComplexityAnalyzer) PrintComplexityReport(functions []FunctionComplexi
 	}
 	fmt.Printf("\n🔍 Function Details:\n")
 
-	lowCount, mediumCount, highCount := 0, 0, 0
+	lowCount, mediumCount, highCount, criticalCount := 0, 0, 0, 0
 
 	for _, fn := range functions {
 		level := ca.GetComplexityLevel(fn.Complexity)
@@ -354,6 +362,9 @@ func (ca *ComplexityAnalyzer) PrintComplexityReport(functions []FunctionComplexi
 		case "high":
 			emoji = "🔴"
 			highCount++
+		case "critical":
+			emoji = "🟤"
+			criticalCount++
 		}
 
 		fmt.Printf("%s %s (%s): %d - %s:%d\n",
@@ -364,5 +375,6 @@ func (ca *ComplexityAnalyzer) PrintComplexityReport(functions []FunctionComplexi
 	fmt.Printf("🟢 Low complexity: %d functions\n", lowCount)
 	fmt.Printf("🟡 Medium complexity: %d functions\n", mediumCount)
 	fmt.Printf("🔴 High complexity: %d functions\n", highCount)
+	fmt.Printf("🟤 Critical complexity: %d functions\n", criticalCount)
 	fmt.Printf("📈 Total functions: %d\n", len(functions))
 }
