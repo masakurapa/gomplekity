@@ -16,6 +16,7 @@ func main() {
 		mediumThreshold   = flag.Int("medium", 10, "Medium complexity starts from this value (10+)")
 		highThreshold     = flag.Int("high", 15, "High complexity starts from this value (15+)")
 		criticalThreshold = flag.Int("critical", 20, "Critical complexity starts from this value (20+)")
+		verbose           = flag.Bool("verbose", false, "Show detailed complexity analysis")
 		help              = flag.Bool("help", false, "Show help")
 	)
 	flag.Parse()
@@ -25,11 +26,13 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Analyzing directory: %s\n", *targetDir)
-	fmt.Printf("Complexity thresholds: Low<=%d, Medium≥%d, High≥%d, Critical≥%d\n", *mediumThreshold-1, *mediumThreshold, *highThreshold, *criticalThreshold)
+	if *verbose {
+		fmt.Printf("Analyzing directory: %s\n", *targetDir)
+		fmt.Printf("Complexity thresholds: Low<=%d, Medium≥%d, High≥%d, Critical≥%d\n", *mediumThreshold-1, *mediumThreshold, *highThreshold, *criticalThreshold)
 
-	if *outputFile != "" {
-		fmt.Printf("Output file: %s\n", *outputFile)
+		if *outputFile != "" {
+			fmt.Printf("Output file: %s\n", *outputFile)
+		}
 	}
 
 	// Create complexity analyzer
@@ -42,13 +45,15 @@ func main() {
 		return
 	}
 
-	// Print complexity report
-	analyzer.PrintComplexityReport(functions)
+	// Print complexity report only if verbose
+	if *verbose {
+		analyzer.PrintComplexityReport(functions)
 
-	// Build and display tree structure
-	complexityTree := analyzer.BuildComplexityTree(functions)
-	fmt.Printf("\n")
-	complexityTree.PrintTree()
+		// Build and display tree structure
+		complexityTree := analyzer.BuildComplexityTree(functions)
+		fmt.Printf("\n")
+		complexityTree.PrintTree()
+	}
 
 	// Generate tree visualization based on complexity
 	generateTreeVisualization(functions, analyzer, *outputFile)
@@ -71,18 +76,19 @@ func usage() {
 	fmt.Println("        High complexity starts from this value (15+) (default 15)")
 	fmt.Println("  -critical int")
 	fmt.Println("        Critical complexity starts from this value (20+) (default 20)")
+	fmt.Println("  -verbose")
+	fmt.Println("        Show detailed complexity analysis")
 	fmt.Println("  -help")
 	fmt.Println("        Show this help message")
 	fmt.Println("")
 	fmt.Println("EXAMPLES:")
 	fmt.Println("  gomplekity")
 	fmt.Println("  gomplekity -dir ./src -output complexity.txt")
-	fmt.Println("  gomplekity -medium 8 -high 12 -critical 16")
+	fmt.Println("  gomplekity -medium 8 -high 12 -critical 16 -verbose")
 }
 
 // generateTreeVisualization generates a tree SVG based on complexity analysis
 func generateTreeVisualization(functions []complexity.FunctionComplexity, analyzer *complexity.ComplexityAnalyzer, outputFile string) {
-	fmt.Printf("\n🌳 Generating tree visualization...\n")
 
 	// Calculate complexity distribution
 	lowCount, mediumCount, highCount, criticalCount := 0, 0, 0, 0
@@ -142,6 +148,7 @@ func generateTreeVisualization(functions []complexity.FunctionComplexity, analyz
 		return
 	}
 
+	fmt.Println()
 	fmt.Printf("✅ Tree visualization saved to: %s\n", filename)
 	fmt.Printf("📊 Color distribution: 🟢%.1f%% 🟡%.1f%% 🔴%.1f%% 🟤%.1f%%\n",
 		green*100, yellow*100, red*100, brown*100)
