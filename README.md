@@ -12,7 +12,7 @@ The leaf colors represent different complexity levels, and the color distributio
 
 - 🟢 **Green**: Low complexity (0-9)
 - 🟡 **Yellow**: Medium complexity (10-14)
-- 🟡 **Red**: High complexity (15-19)
+- 🔴 **Red**: High complexity (15-19)
 - 🟤 **Brown**: Critical complexity (20+)
 
 ## Installation
