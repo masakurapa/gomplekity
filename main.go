@@ -142,6 +142,15 @@ func generateTreeVisualization(functions []complexity.FunctionComplexity, analyz
 	if criticalCount > 0 && brown < 0.1 {
 		brown = 0.1
 	}
+	
+	// Normalize to ensure total is 100%
+	total := green + yellow + red + brown
+	if total > 0 {
+		green = green / total
+		yellow = yellow / total
+		red = red / total
+		brown = brown / total
+	}
 
 	// Generate the SVG tree
 	svg := tree.Generate(green, yellow, red, brown)
