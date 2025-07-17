@@ -8,7 +8,7 @@ The leaf colors represent different complexity levels, and the color distributio
 
 **Not a serious tool.** A simple Go complexity visualizer that turns your code complexity into a tree with colored leaves.
 
-![Example Tree](example.svg)
+![Example Tree](example.png)
 
 - 🟢 **Green**: Low complexity (0-9)
 - 🟡 **Yellow**: Medium complexity (10-14)
@@ -26,14 +26,17 @@ go install github.com/masakurapa/gomplekity@latest
 ### Basic usage
 
 ```bash
-# Analyze current directory
+# Analyze current directory (outputs PNG by default)
 gomplekity
 
 # Analyze specific directory
 gomplekity -dir ./src
 
 # Custom output file
-gomplekity -output my_project.svg
+gomplekity -output my_project.png
+
+# Generate SVG instead of PNG
+gomplekity -output my_project.svg -svg
 ```
 
 ### Advanced options
@@ -45,26 +48,30 @@ gomplekity -verbose
 # Custom complexity thresholds
 gomplekity -medium 8 -high 12 -critical 16
 
-# All options
-gomplekity -dir ./src -output project.svg -medium 8 -high 12 -critical 16 -verbose
+# All options with PNG output
+gomplekity -dir ./src -output project.png -medium 8 -high 12 -critical 16 -verbose
+
+# All options with SVG output
+gomplekity -dir ./src -output project.svg -svg -medium 8 -high 12 -critical 16 -verbose
 ```
 
 ### Options
 
 ```
 -dir string         Directory to analyze (default ".")
--output string      Output file path (default "complexity_tree.svg")
+-output string      Output file path (default "complexity_tree.png")
 -medium int         Medium complexity threshold (default 10)
 -high int           High complexity threshold (default 15)
 -critical int       Critical complexity threshold (default 20)
 -verbose            Show detailed complexity analysis
+-svg                Generate SVG output instead of PNG
 -help               Show help message
 ```
 
 ### Sample output
 
 ```
-✅ Tree visualization saved to: complexity_tree.svg
+✅ Tree visualization saved to: complexity_tree.png
 📊 Color distribution: 🟢76.9% 🟡15.4% 🔴7.7% 🟤0.0%
 ```
 

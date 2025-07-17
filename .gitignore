@@ -37,6 +37,8 @@ go.work.sum
 # Generated output files (don't commit test outputs)
 *.svg
 !example.svg
+*.png
+!example.png
 
 # Binary files
 gomplekity
